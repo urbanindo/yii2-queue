@@ -1,0 +1,21 @@
+{
+    "name": "urbanindo/yii2-queue",
+    "description": "Queue component for Yii2",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Petra Barus",
+            "email": "petra.barus@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "UrbanIndo\\Yii2\\Queue\\": "src/"
+        }
+    }
+
+}
