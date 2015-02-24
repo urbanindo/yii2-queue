@@ -4,7 +4,21 @@ This provides queue component for Yii2
 
 ## Installation
 
+The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
+Either run
+
+```
+php composer.phar require --prefer-dist urbanindo/yii2-queue "*"
+```
+
+or add
+
+```
+"urbanindo/yii2-queue": "*"
+```
+
+to the require section of your `composer.json` file.
 
 ## Setting Up
 
