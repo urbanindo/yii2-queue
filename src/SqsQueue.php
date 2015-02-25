@@ -48,9 +48,10 @@ class SqsQueue extends Queue {
     }
 
     /**
-     * @inheritdoc
+     * Return next job from the queue.
+     * @return Job|boolean the job or false if not found.
      */
-    public function getJob() {
+    public function fetch() {
         $message = $this->_client->receiveMessage([
             'QueueUrl' => $this->url,
             'AttributeNames' => ['ApproximateReceiveCount'],
@@ -70,7 +71,7 @@ class SqsQueue extends Queue {
      * @return \UrbanIndo\Yii2\Queue\Job
      */
     private function createJobFromMessage($message) {
-        $job = $this->deserializeJob($message['Body']);
+        $job = $this->deserialize($message['Body']);
         $job->header['ReceiptHandle'] = $message['ReceiptHandle'];
         $job->id = $message['MessageId'];
         return $job;
@@ -85,18 +86,18 @@ class SqsQueue extends Queue {
     public function post($job) {
         $model = $this->_client->sendMessage([
             'QueueUrl' => $this->url,
-            'MessageBody' => $this->serializeJob($job),
+            'MessageBody' => $this->serialize($job),
         ]);
         return $model !== null;
     }
 
     /**
-     * Delete job from the queue.
+     * Delete the job from the queue.
      * 
-     * @param Job $job the job.
-     * @return boolean
+     * @param Job $job
+     * @return boolean whether the operation succeed.
      */
-    public function deleteJob($job) {
+    public function delete($job) {
         if (!empty($job->header['ReceiptHandle'])) {
             $receiptHandle = $job->header['ReceiptHandle'];
             $response = $this->_client->deleteMessage([

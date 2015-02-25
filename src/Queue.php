@@ -49,8 +49,8 @@ abstract class Queue extends \yii\base\Component {
 
     /**
      * Post new job to the queue.
-     * @param string $route the route.
-     * @param mixed $data the data.
+     * @param Job $job the job.
+     * @return boolean whether operation succeed.
      */
     public abstract function post($job);
 
@@ -58,29 +58,30 @@ abstract class Queue extends \yii\base\Component {
      * Return next job from the queue.
      * @return Job
      */
-    public abstract function getJob();
+    public abstract function fetch();
 
     /**
      * Run the job.
      * 
      * @param Job $job
      */
-    public function runJob($job) {
+    public function run($job) {
         if ($job->isCallable()) {
             $retval = $job->runCallable();
         } else {
             $retval = $this->module->runAction($job->route, $job->data);
         }
         if ($retval !== false) {
-            $this->deleteJob($job);
+            $this->delete($job);
         }
     }
 
     /**
      * Delete the job.
      * @param Job $job
+     * @return boolean whether the operation succeed.
      */
-    public abstract function deleteJob($job);
+    public abstract function delete($job);
 
     /**
      * Deserialize job to be executed.
@@ -89,7 +90,7 @@ abstract class Queue extends \yii\base\Component {
      * @return \UrbanIndo\Yii2\Queue\Job the job
      * @throws \yii\base\Exception if there is no route detected.
      */
-    protected function deserializeJob($json) {
+    protected function deserialize($json) {
         $message = \yii\helpers\Json::decode($json);
         if (!isset($message['route'])) {
             throw new \yii\base\Exception('No route detected');
@@ -115,7 +116,7 @@ abstract class Queue extends \yii\base\Component {
      * @param Job $job the job.
      * @return string JSON string.
      */
-    protected function serializeJob($job) {
+    protected function serialize($job) {
         $return = [];
         if ($job->isCallable()) {
             $return['type'] = Job::TYPE_CALLABLE;

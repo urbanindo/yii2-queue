@@ -143,10 +143,10 @@ class QueueController extends \yii\console\Controller {
      */
     public function actionRun() {
         $queue = $this->getQueue();
-        $job = $queue->getJob();
+        $job = $queue->fetch();
         if ($job !== false) {
             $this->stdout("Running job #: {$job->id}" . PHP_EOL);
-            $queue->runJob($job);
+            $queue->run($job);
         } else {
             $this->stdout("No job\n");
         }
@@ -173,7 +173,7 @@ class QueueController extends \yii\console\Controller {
     public function actionRunTask($route, $data = '{}') {
         $this->stdout("Running task queue...");
         $job = $this->createJob($route, $data);
-        $this->getQueue()->runJob($job);
+        $this->getQueue()->run($job);
     }
 
     public function actionTest() {
@@ -206,7 +206,7 @@ class QueueController extends \yii\console\Controller {
         $this->stdout("Peeking queue...");
         $queue = $this->getQueue();
         for ($i = 0; $i < $count; $i++) {
-            $job = $queue->getJob();
+            $job = $queue->fetch();
             if ($job !== false) {
                 $this->stdout("Peeking job #: {$job->id}" . PHP_EOL);
                 $this->stdout(\yii\helpers\Json::encode($job));
@@ -223,10 +223,10 @@ class QueueController extends \yii\console\Controller {
         $this->stdout("Purging queue...");
         $queue = $this->getQueue();
         for ($i = 0; $i < $count; $i++) {
-            $job = $queue->getJob();
+            $job = $queue->fetch();
             if ($job !== false) {
                 $this->stdout("Purging job #: {$job->id}" . PHP_EOL);
-                $queue->deleteJob($job);
+                $queue->delete($job);
             }
         }
     }
