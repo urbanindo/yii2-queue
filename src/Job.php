@@ -61,7 +61,8 @@ class Job extends \yii\base\Object {
      * @return boolean
      */
     public function runCallable() {
-        return call_user_func_array($this->route, $this->data);
+        $return = call_user_func_array($this->route, $this->data);
+        return $return !== false;
     }
 
 }

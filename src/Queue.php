@@ -66,14 +66,13 @@ abstract class Queue extends \yii\base\Component {
      * @param Job $job
      */
     public function runJob($job) {
-        if ($job->isCallable() &&
-                $job->runCallable()) {
-            $this->deleteJob($job);
+        if ($job->isCallable()) {
+            $retval = $job->runCallable();
         } else {
             $retval = $this->module->runAction($job->route, $job->data);
-            if ($retval !== false) {
-                $this->deleteJob($job);
-            }
+        }
+        if ($retval !== false) {
+            $this->deleteJob($job);
         }
     }
 
