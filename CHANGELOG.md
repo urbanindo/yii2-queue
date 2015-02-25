@@ -7,3 +7,4 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - DeferredEventBehavior for deferring event handler to the task queue.
+- Peek and Purging in the console command.

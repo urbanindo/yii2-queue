@@ -197,17 +197,37 @@ class QueueController extends \yii\console\Controller {
         ]);
     }
 
+    /**
+     * Peek messages from queue that are still active.
+     * 
+     * @param integer number of messages.
+     */
     public function actionPeek($count = 1) {
         $this->stdout("Peeking queue...");
+        $queue = $this->getQueue();
         for ($i = 0; $i < $count; $i++) {
-            
+            $job = $queue->getJob();
+            if ($job !== false) {
+                $this->stdout("Peeking job #: {$job->id}" . PHP_EOL);
+                $this->stdout(\yii\helpers\Json::encode($job));
+            }
         }
     }
 
+    /**
+     * Purging messages from queue that are still active.
+     * 
+     * @param integer number of messages.
+     */
     public function actionPurge($count = 1) {
-        $this->stdout("Popping queue...");
+        $this->stdout("Purging queue...");
+        $queue = $this->getQueue();
         for ($i = 0; $i < $count; $i++) {
-            
+            $job = $queue->getJob();
+            if ($job !== false) {
+                $this->stdout("Purging job #: {$job->id}" . PHP_EOL);
+                $queue->deleteJob($job);
+            }
         }
     }
 
