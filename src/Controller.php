@@ -57,7 +57,7 @@ abstract class Controller extends \yii\base\Controller {
         }
 
         if (!empty($missing)) {
-            throw new \Exception(Yii::t('yii',
+            throw new \Exception(\Yii::t('yii',
                     'Missing required arguments: {params}',
                     ['params' => implode(', ', $missing)]));
         }
