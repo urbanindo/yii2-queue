@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## 2015-02-25
 
-### Change
+### Changed
 - Shorten  `postJob`, `getJob`, `deleteJob`, `runJob` method name to `post`, 
   `fetch`, `delete`, `run`.
 

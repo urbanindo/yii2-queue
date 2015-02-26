@@ -58,8 +58,9 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
         $pk = $this->owner->getPrimaryKey();
         $attributes = $this->owner->getAttributes();
         $eventName = $event->name;
+        $handlers = ($this->_hasEventHandlers) ? $this->events : false;
         $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
-            'route' => function() use ($class, $pk, $attributes, $eventName) {
+            'route' => function() use ($class, $pk, $attributes, $handlers, $eventName) {
                 if ($eventName == ActiveRecord::EVENT_AFTER_DELETE) {
                     $object = \Yii::createObject($class);
                     /* @var $object ActiveRecord */
@@ -70,11 +71,16 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
                         throw new Exception("Model is not found");
                     }
                 }
-                if (!$object instanceof DeferredEventInterface) {
+
+                if ($handlers) {
+                    $handler = $handlers[$eventName];
+                    return call_user_method($handler, $object);
+                } else if ($object instanceof DeferredEventInterface) {
+                    /* @var $object DeferredEventInterface */
+                    return $object->handleDeferredEvent($eventName);
+                } else {
                     throw new Exception("Model is not instance of DeferredEventInterface");
                 }
-                /* @var $object DeferredEventInterface */
-                return $object->handleDeferredEvent($eventName);
             }
         ]));
     }

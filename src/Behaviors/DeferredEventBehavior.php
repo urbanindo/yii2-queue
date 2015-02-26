@@ -35,10 +35,48 @@ class DeferredEventBehavior extends \yii\base\Behavior {
     public $queue = 'queue';
 
     /**
-     * List events that
+     * List events that handled by the behavior.
+     * 
+     * This has two formats. The first one is "index", 
+     * 
+     *     [self::EVENT_AFTER_SAVE, EVENT_AFTER_VALIDATE]]
+     * 
+     * and the second one is "key=>value". e.g. 
+     * 
+     *     [
+     *         self::EVENT_AFTER_SAVE => 'deferAfterSave', 
+     *         self::EVENT_AFTER_VALIDATE => 'deferAfterValidate'
+     *     ]
+     * 
+     * For the first one, the object should implement DeferredEventInterface.
+     * As for the second one, the handler will use the respective method of the
+     * event.
+     * 
+     * e.g.
+     * 
+     *     [
+     *         self::EVENT_AFTER_SAVE => 'deferAfterSave', 
+     *         self::EVENT_AFTER_VALIDATE => 'deferAfterValidate'
+     *     ]
+     * 
+     * the model should implement
+     * 
+     *     public function deferAfterSave(){
+     *     }
+     * 
+     * Note that the method doesn't receive $event just like any event handler.
+     * This is because the $event object can be too large for the queue.
+     * Also note that object that run the method is a clone.
+     * 
      * @var type 
      */
     public $events = [];
+
+    /**
+     * Whether each events has its own event handler in the owner.
+     * @var boolean
+     */
+    protected $_hasEventHandlers = false;
 
     /**
      * Declares event handlers for the [[owner]]'s events.
@@ -46,7 +84,12 @@ class DeferredEventBehavior extends \yii\base\Behavior {
      */
     public function events() {
         parent::events();
-        return array_fill_keys($this->events, 'postDeferredEvent');
+        if (!$this->_hasEventHandlers) {
+            return array_fill_keys($this->events, 'postDeferredEvent');
+        } else {
+            return array_fill_keys(array_keys($this->events),
+                    'postDeferredEvent');
+        }
     }
 
     /**
@@ -60,6 +103,8 @@ class DeferredEventBehavior extends \yii\base\Behavior {
         if (!$this->queue instanceof \UrbanIndo\Yii2\Queue\Queue) {
             throw new Exception("Can not found queue component named '{$queueName}'");
         }
+        $this->_hasEventHandlers = !\yii\helpers\ArrayHelper::isIndexed($this->events,
+                        true);
     }
 
     /**
@@ -67,17 +112,23 @@ class DeferredEventBehavior extends \yii\base\Behavior {
      * @param \yii\base\Event $event
      */
     public function postDeferredEvent($event) {
-        $object = $this->owner;
-        if (!$object instanceof DeferredEventInterface) {
+        $object = clone $this->owner;
+        if (!$this->_hasEventHandlers && !$object instanceof DeferredEventInterface) {
             throw new Exception("Model is not instance of DeferredEventInterface");
         }
+        $handlers = ($this->_hasEventHandlers) ? $this->events : false;
+        $eventName = $event->name;
         $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
-            'route' => function() use ($object, $event) {
-                if (!$object instanceof DeferredEventInterface) {
-                    throw new Exception("Model is not instance of DeferredEventInterface");
+            'route' => function() use ($object, $eventName, $handlers) {
+                if ($handlers) {
+                    $handler = $handlers[$eventName];
+                    return call_user_method($handler, $object);
+                } else if ($object instanceof DeferredEventInterface) {
+                    /* @var $object DeferredEventInterface */
+                    return $object->handleDeferredEvent($eventName);
+                } else {
+                    throw new Exception("Model doesn't have handlers for the event or is not instance of DeferredEventInterface");
                 }
-                /* @var $object DeferredEventInterface */
-                $object->handleDeferredEvent($event);
             }
         ]));
     }

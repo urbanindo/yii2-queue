@@ -19,7 +19,7 @@ namespace UrbanIndo\Yii2\Queue\Behaviors;
 interface DeferredEventInterface {
 
     /**
-     * @param \yii\base\Event|string $event the event or event name.
+     * @param string $event the name of the event.
      */
-    public function handleDeferredEvent($event);
+    public function handleDeferredEvent($eventName);
 }

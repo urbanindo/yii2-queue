@@ -66,7 +66,9 @@ the task in the component. For example, queue using AWS SQS
 ]
 ```
 
-## Creating A Worker
+## Usage
+
+### Creating A Worker
 
 Creating a worker is just the same with creating console or web controller.
 In the task module create a controller that extends `UrbanIndo\Yii2\Queue\Controller`
@@ -101,7 +103,7 @@ class FooController extends UrbanIndo\Yii2\Queue\Controller {
 }
 ```
 
-## Running The Listener
+### Running The Listener
 
 To run the listener, run the console that set in the above config. If the
 controller mapped as `queue` then run.
@@ -110,7 +112,7 @@ controller mapped as `queue` then run.
 yii queue/listen
 ```
 
-## Posting A Job
+### Posting A Job
 
 To post a job from source code, put something like this.
 
@@ -136,6 +138,48 @@ Yii::$app->queue->post(new Job(function(){
     echo 'Hello World!';
 }));
 ```
+
+### Deferred Event
+
+In this queue, there is a feature called **Deferred Event**. Basically using this
+feature, we can defer a process executed after a certain event using queue.
+
+To use this, add behavior in a component and implement the defined event handler.
+
+```php
+    public function behaviors() {
+        return array_merge([
+            [
+                'class' => \UrbanIndo\Yii2\Queue\Behaviors\DeferredEventBehavior::class,
+                'events' => [
+                    self::EVENT_AFTER_VALIDATE => 'deferAfterValidate', 
+                ]
+            ]
+        ]);
+    }
+
+    public function deferAfterValidate(){
+        //Do something here.
+    }
+```
+
+**NOTE**
+Due to reducing the message size, the `$event` object that usually passed when
+triggered the event will not be passed to the deferred event. Also, the object
+in which the method invoked is merely a clone object, so it won't have the
+behavior and the event attached in the original object.
+
+As for `ActiveRecord` class, since the object can not be passed due to limitation
+of SuperClosure in serializing PDO (I personally think that's bad too), the
+behavior should use `\UrbanIndo\Yii2\Queue\Behaviors\ActiveRecordDeferredEventBehavior`
+instead. The difference is in the object in which the deferred event handler
+invoked.
+
+Since we can not pass the original object, the invoking object will be re-fetched
+from the table using the primary key. And for the `afterDelete` event, since
+the respective row is not in the table anymore, the invoking object is a new
+object whose attributes are assigned from the attributes of the original object.
+
 
 ## Road Map
 
