@@ -79,6 +79,12 @@ class DeferredEventBehavior extends \yii\base\Behavior {
     protected $_hasEventHandlers = false;
 
     /**
+     * Whether has serialized event.handler.
+     * @var \SuperClosure\Serializer 
+     */
+    protected $_serializer;
+
+    /**
      * Declares event handlers for the [[owner]]'s events.
      * @return array
      */
@@ -105,6 +111,16 @@ class DeferredEventBehavior extends \yii\base\Behavior {
         }
         $this->_hasEventHandlers = !\yii\helpers\ArrayHelper::isIndexed($this->events,
                         true);
+        if ($this->_hasEventHandlers) {
+            foreach ($this->events as $attr => $handler) {
+                if (is_callable($handler)) {
+                    if (!isset($this->_serializer)) {
+                        $this->_serializer = new \SuperClosure\Serializer();
+                    }
+                    $this->events[$attr] = $this->_serializer->serialize($handler);
+                }
+            }
+        }
     }
 
     /**
@@ -118,11 +134,25 @@ class DeferredEventBehavior extends \yii\base\Behavior {
         }
         $handlers = ($this->_hasEventHandlers) ? $this->events : false;
         $eventName = $event->name;
+        if (isset($this->_serializer)) {
+            $serializer = $this->_serializer;
+        } else {
+            $serializer = null;
+        }
         $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
-            'route' => function() use ($object, $eventName, $handlers) {
+            'route' => function() use ($object, $eventName, $handlers, $serializer) {
                 if ($handlers) {
                     $handler = $handlers[$eventName];
-                    return call_user_method($handler, $object);
+                    if ($serializer !== null) {
+                        try {
+                            $unserialized = $serializer->unserialize($handler);
+                            $unserialized($object);
+                        } catch (Exception $exc) {
+                            return call_user_method($handler, $object);
+                        }
+                    } else {
+                        return call_user_method($handler, $object);
+                    }
                 } else if ($object instanceof DeferredEventInterface) {
                     /* @var $object DeferredEventInterface */
                     return $object->handleDeferredEvent($eventName);

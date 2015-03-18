@@ -59,8 +59,13 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
         $attributes = $this->owner->getAttributes();
         $eventName = $event->name;
         $handlers = ($this->_hasEventHandlers) ? $this->events : false;
+        if (isset($this->_serializer)) {
+            $serializer = $this->_serializer;
+        } else {
+            $serializer = null;
+        }
         $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
-            'route' => function() use ($class, $pk, $attributes, $handlers, $eventName) {
+            'route' => function() use ($class, $pk, $attributes, $handlers, $eventName, $serializer) {
                 if ($eventName == ActiveRecord::EVENT_AFTER_DELETE) {
                     $object = \Yii::createObject($class);
                     /* @var $object ActiveRecord */
@@ -74,7 +79,16 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
 
                 if ($handlers) {
                     $handler = $handlers[$eventName];
-                    return call_user_method($handler, $object);
+                    if ($serializer !== null) {
+                        try {
+                            $unserialized = $serializer->unserialize($handler);
+                            $unserialized($object);
+                        } catch (Exception $exc) {
+                            return call_user_method($handler, $object);
+                        }
+                    } else {
+                        return call_user_method($handler, $object);
+                    }
                 } else if ($object instanceof DeferredEventInterface) {
                     /* @var $object DeferredEventInterface */
                     return $object->handleDeferredEvent($eventName);
