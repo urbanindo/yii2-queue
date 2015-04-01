@@ -69,7 +69,11 @@ abstract class Queue extends \yii\base\Component {
         if ($job->isCallable()) {
             $retval = $job->runCallable();
         } else {
-            $retval = $this->module->runAction($job->route, $job->data);
+            try {
+                $retval = $this->module->runAction($job->route, $job->data);
+            } catch (\Exception $e) {
+                throw new \yii\base\Exception("No route detected for {$job->route}",500, $e);
+            }
         }
         if ($retval !== false) {
             $this->delete($job);
