@@ -52,7 +52,7 @@ abstract class Queue extends \yii\base\Component {
      * @param Job $job the job.
      * @return boolean whether operation succeed.
      */
-    public abstract function post($job);
+    public abstract function post(&$job);
 
     /**
      * Return next job from the queue.

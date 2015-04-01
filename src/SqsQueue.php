@@ -83,12 +83,17 @@ class SqsQueue extends Queue {
      * @param Job $job the job model.
      * @return boolean whether operation succeed.
      */
-    public function post($job) {
+    public function post(&$job) {
         $model = $this->_client->sendMessage([
             'QueueUrl' => $this->url,
             'MessageBody' => $this->serialize($job),
         ]);
-        return $model !== null;
+        if (model !== null) {
+            $job->id = $model['MessageId'];
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
