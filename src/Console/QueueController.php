@@ -111,9 +111,11 @@ class QueueController extends \yii\console\Controller {
         if ($process->isSuccessful()) {
             //TODO logging.
             $this->stdout($process->getOutput() . PHP_EOL);
+            $this->stdout($process->getErrorOutput(). PHP_EOL);
         } else {
             //TODO logging.
             $this->stdout($process->getOutput() . PHP_EOL);
+            $this->stdout($process->getErrorOutput(). PHP_EOL);
         }
     }
 
@@ -159,7 +161,8 @@ class QueueController extends \yii\console\Controller {
      */
     public function actionPost($route, $data = '{}') {
         $this->stdout("Posting job to queue...\n");
-        $this->getQueue()->post($this->createJob($route, $data));
+        $job = $this->createJob($route, $data);
+        $this->getQueue()->post($job);
     }
 
     /**
