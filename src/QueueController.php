@@ -17,11 +17,9 @@ class QueueController extends \yii\web\Controller{
      */
     public function actionPost() {
         $route = \Yii::$app->getRequest()->post('route');
-        $data = \Yii::$app->getRequest()->post('data');
+        $data = \Yii::$app->getRequest()->post('data', []);
         if (is_string($data)) {
             $data = \yii\helpers\Json::decode($data);
-        } else {
-            $data = [];
         }
         /* @var $queue Queue */
         $queue = \Yii::$app->get($this->queueComponent);
@@ -33,7 +31,7 @@ class QueueController extends \yii\web\Controller{
         ])))) {
             return ['status' => 'okay', 'jobId' => $job->id];
         } else {
-            return ['status' => 'fail'];
+            throw new \yii\web\HttpException(500, 'failed to post job');
         }
         
         
