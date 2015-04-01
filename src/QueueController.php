@@ -9,24 +9,24 @@ namespace UrbanIndo\Yii2\Queue;
  */
 class QueueController extends \yii\web\Controller{
     public $enableCsrfValidation = false;
-    public $queueComponent;
+    public $queueComponent = 'queue';
     
     /**
      * 
      * @return type
      */
-    public function actionPostJob() {
+    public function actionPost() {
         $route = \Yii::$app->getRequest()->post('route');
-        $data = Yii::$app->getRequest()->post('data');
+        $data = \Yii::$app->getRequest()->post('data');
         if (is_string($data)) {
             $data = \yii\helpers\Json::decode($data);
         } else {
             $data = [];
         }
         /* @var $queue Queue */
-        $queue = Yii::$app->get($this->queueComponent);
+        $queue = \Yii::$app->get($this->queueComponent);
         
-        Yii::$app->getResponse()->format = 'json';
+        \Yii::$app->getResponse()->format = 'json';
         if ($queue->postJob(($job = new Job([
             'route' => $route,
             'data' => $data
