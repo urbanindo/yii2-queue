@@ -25,7 +25,7 @@ class QueueController extends \yii\web\Controller{
         $queue = \Yii::$app->get($this->queueComponent);
         
         \Yii::$app->getResponse()->format = 'json';
-        if ($queue->postJob(($job = new Job([
+        if ($queue->post(($job = new Job([
             'route' => $route,
             'data' => $data
         ])))) {
