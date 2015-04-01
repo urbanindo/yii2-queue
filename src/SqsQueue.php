@@ -88,7 +88,7 @@ class SqsQueue extends Queue {
             'QueueUrl' => $this->url,
             'MessageBody' => $this->serialize($job),
         ]);
-        if (model !== null) {
+        if ($model !== null) {
             $job->id = $model['MessageId'];
             return true;
         } else {
