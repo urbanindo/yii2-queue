@@ -77,7 +77,7 @@ class MultipleQueue extends Queue {
      * @param Job $job the job.
      * @return boolean whether operation succeed.
      */
-    public function post($job) {
+    public function post(&$job) {
         return $this->postToQueue($job, 0);
     }
 
@@ -87,7 +87,7 @@ class MultipleQueue extends Queue {
      * @param integer $index the queue index.
      * @return boolean whether operation succeed.
      */
-    public function postToQueue($job, $index) {
+    public function postToQueue(&$job, $index) {
         $queue = $this->getQueue($index);
         if ($queue === null) {
             return false;
