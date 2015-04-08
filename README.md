@@ -33,7 +33,7 @@ After the installation, first step is to set the console controller.
 return [
     // ...
     'controllerMap' => [
-        'queue' => 'UrbanIndo\Yii2\Queue\Console\QueueController'
+        'queue' => 'UrbanIndo\Yii2\Queue\Console\Controller'
     ],
 ];
 ```
@@ -71,12 +71,12 @@ the task in the component. For example, queue using AWS SQS
 ### Creating A Worker
 
 Creating a worker is just the same with creating console or web controller.
-In the task module create a controller that extends `UrbanIndo\Yii2\Queue\Controller`
+In the task module create a controller that extends `UrbanIndo\Yii2\Queue\Worker\Controller`
 
 e.g.
 
 ```php
-class FooController extends UrbanIndo\Yii2\Queue\Controller {
+class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
     
     public function actionBar($param1, $param2){
         echo $param1;
@@ -91,7 +91,7 @@ chance.
 e.g.
 
 ```php
-class FooController extends UrbanIndo\Yii2\Queue\Controller {
+class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
     
     public function actionBar($param1, $param2){
         try {
@@ -179,6 +179,52 @@ Since we can not pass the original object, the invoking object will be re-fetche
 from the table using the primary key. And for the `afterDelete` event, since
 the respective row is not in the table anymore, the invoking object is a new
 object whose attributes are assigned from the attributes of the original object.
+
+### Web End Point
+
+We can use web endpoint to use the queue by adding `\UrbanIndo\Yii2\Queue\Web\Controller` 
+to the controller map.
+
+For example
+
+```php
+    'controllerMap' => [
+        'queue' => [
+            /* @var $queue UrbanIndo\Yii2\Queue\Web\Controller */
+            'class' => 'UrbanIndo\Yii2\Queue\Web\Controller',
+        ]
+    ],
+```
+
+To post this use
+
+```
+curl -XPOST http://example.com/queue/post --data route='test/test' --data data='{"data":"data"}'
+```
+
+To limit the access to the controller, we can use `\yii\filters\AccessControl` filter.
+
+For example to filter by IP address, we can use something like this.
+
+```php
+    'controllerMap' => [
+        'queue' => [
+            /* @var $queue UrbanIndo\Yii2\Queue\Web\Controller */
+            'class' => 'UrbanIndo\Yii2\Queue\Web\Controller',
+            'as access' => [
+                'class' => '\yii\filters\AccessControl',
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'ips' => [
+                            '127.0.0.1'
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ],
+```
 
 
 ## Road Map

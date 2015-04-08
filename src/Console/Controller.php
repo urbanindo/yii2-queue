@@ -9,6 +9,8 @@
 
 namespace UrbanIndo\Yii2\Queue\Console;
 
+use UrbanIndo\Yii2\Queue\Job;
+
 /**
  * QueueController handles console command for running the queue.
  * 
@@ -111,11 +113,11 @@ class Controller extends \yii\console\Controller {
         if ($process->isSuccessful()) {
             //TODO logging.
             $this->stdout($process->getOutput() . PHP_EOL);
-            $this->stdout($process->getErrorOutput(). PHP_EOL);
+            $this->stdout($process->getErrorOutput() . PHP_EOL);
         } else {
             //TODO logging.
             $this->stdout($process->getOutput() . PHP_EOL);
-            $this->stdout($process->getErrorOutput(). PHP_EOL);
+            $this->stdout($process->getErrorOutput() . PHP_EOL);
         }
     }
 
@@ -180,7 +182,7 @@ class Controller extends \yii\console\Controller {
     }
 
     public function actionTest() {
-        $this->getQueue()->post(new \UrbanIndo\Yii2\Queue\Job([
+        $this->getQueue()->post(new Job([
             'route' => 'test/test',
             'data' => ['halohalo' => 10, 'test2' => 100],
         ]));
@@ -191,10 +193,10 @@ class Controller extends \yii\console\Controller {
      * 
      * @param string $route the route.
      * @param string $data the JSON data.
-     * @return \UrbanIndo\Yii2\Queue\Job
+     * @return Job
      */
     private function createJob($route, $data = '{}') {
-        return new \UrbanIndo\Yii2\Queue\Job([
+        return new Job([
             'route' => $route,
             'data' => \yii\helpers\Json::decode($data),
         ]);

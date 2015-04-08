@@ -2,6 +2,8 @@
 
 namespace UrbanIndo\Yii2\Queue\Web;
 
+use UrbanIndo\Yii2\Queue\Job;
+
 /**
  * QueueController is a web controller to post job via url.
  * 
@@ -28,22 +30,28 @@ class Controller extends \yii\web\Controller {
      * @return type
      */
     public function actionPost() {
+        \Yii::$app->getResponse()->format = 'json';
+
         $route = \Yii::$app->getRequest()->post('route');
         $data = \Yii::$app->getRequest()->post('data', []);
+
+        if (empty($route)) {
+            throw new \yii\web\ServerErrorHttpException('Failed to post job');
+        }
+
         if (is_string($data)) {
             $data = \yii\helpers\Json::decode($data);
         }
         /* @var $queue \UrbanIndo\Yii2\Queue\Queue */
         $queue = \Yii::$app->get($this->queueComponent);
 
-        \Yii::$app->getResponse()->format = 'json';
         if ($queue->post(($job = new Job([
                     'route' => $route,
                     'data' => $data
                 ])))) {
             return ['status' => 'okay', 'jobId' => $job->id];
         } else {
-            throw new \yii\web\HttpException(500, 'failed to post job');
+            throw new \yii\web\ServerErrorHttpException('Failed to post job');
         }
     }
 
