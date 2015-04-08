@@ -7,7 +7,7 @@
  * @since 2015.02.24
  */
 
-namespace UrbanIndo\Yii2\Queue;
+namespace UrbanIndo\Yii2\Queue\Worker;
 
 use yii\base\InlineAction;
 

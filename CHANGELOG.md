@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 2015-04-08
+
+### Changed
+- Refactoring controller classes to Web, Console, and Worker.
+
+### Added
+- Added Web endpoint for posting queue.
+
 ## 2015-02-25
 
 ### Changed

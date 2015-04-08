@@ -28,7 +28,7 @@ namespace UrbanIndo\Yii2\Queue\Console;
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.24
  */
-class QueueController extends \yii\console\Controller {
+class Controller extends \yii\console\Controller {
 
     /**
      * @var string the name of the queue component. default to 'queue'.
