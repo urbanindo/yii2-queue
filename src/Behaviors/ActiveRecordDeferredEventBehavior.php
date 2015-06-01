@@ -55,8 +55,6 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
      */
     public function postDeferredEvent($event) {
         $class = get_class($this->owner);
-        $pk = $this->owner->getPrimaryKey();
-        $attributes = $this->owner->getAttributes();
         $eventName = $event->name;
         $handlers = ($this->_hasEventHandlers) ? $this->events : false;
         if (isset($this->_serializer)) {
@@ -64,39 +62,63 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
         } else {
             $serializer = null;
         }
-        $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
-            'route' => function() use ($class, $pk, $attributes, $handlers, $eventName, $serializer) {
-                if ($eventName == ActiveRecord::EVENT_AFTER_DELETE) {
+        
+        if ($eventName == ActiveRecord::EVENT_AFTER_DELETE) {
+            $attributes = $this->owner->getAttributes();
+            $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
+                'route' => function() use ($class, $attributes, $handlers, $eventName, $serializer) {
                     $object = \Yii::createObject($class);
                     /* @var $object ActiveRecord */
                     $object->setAttributes($attributes, false);
-                } else {
+                    if ($handlers) {
+                        $handler = $handlers[$eventName];
+                        if ($serializer !== null) {
+                            try {
+                                $unserialized = $serializer->unserialize($handler);
+                                $unserialized($object);
+                            } catch (Exception $exc) {
+                                return call_user_method($handler, $object);
+                            }
+                        } else {
+                            return call_user_method($handler, $object);
+                        }
+                    } else if ($object instanceof DeferredEventInterface) {
+                        /* @var $object DeferredEventInterface */
+                        return $object->handleDeferredEvent($eventName);
+                    } else {
+                        throw new Exception("Model is not instance of DeferredEventInterface");
+                    }
+                }
+            ]));
+        } else {
+            $pk = $this->owner->getPrimaryKey();
+            $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
+                'route' => function() use ($class, $pk, $handlers, $eventName, $serializer) {
                     $object = $class::findOne($pk);
                     if ($object === null) {
                         throw new Exception("Model is not found");
                     }
-                }
-
-                if ($handlers) {
-                    $handler = $handlers[$eventName];
-                    if ($serializer !== null) {
-                        try {
-                            $unserialized = $serializer->unserialize($handler);
-                            $unserialized($object);
-                        } catch (Exception $exc) {
+                    if ($handlers) {
+                        $handler = $handlers[$eventName];
+                        if ($serializer !== null) {
+                            try {
+                                $unserialized = $serializer->unserialize($handler);
+                                $unserialized($object);
+                            } catch (Exception $exc) {
+                                return call_user_method($handler, $object);
+                            }
+                        } else {
                             return call_user_method($handler, $object);
                         }
+                    } else if ($object instanceof DeferredEventInterface) {
+                        /* @var $object DeferredEventInterface */
+                        return $object->handleDeferredEvent($eventName);
                     } else {
-                        return call_user_method($handler, $object);
+                        throw new Exception("Model is not instance of DeferredEventInterface");
                     }
-                } else if ($object instanceof DeferredEventInterface) {
-                    /* @var $object DeferredEventInterface */
-                    return $object->handleDeferredEvent($eventName);
-                } else {
-                    throw new Exception("Model is not instance of DeferredEventInterface");
                 }
-            }
-        ]));
+            ]));
+        }
     }
 
 }

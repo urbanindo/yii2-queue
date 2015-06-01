@@ -38,6 +38,16 @@ abstract class Queue extends \yii\base\Component {
      * @var \yii\base\Module
      */
     public $module;
+    
+    const SERIALIZER_JSON = 'json';
+    
+    const SERIALIZER_PHP = 'php';
+    
+    /**
+     * Choose the serializer.
+     * @var string
+     */
+    public $serializer = 'json';
 
     /**
      * Initializes the module.
@@ -90,30 +100,50 @@ abstract class Queue extends \yii\base\Component {
     /**
      * Deserialize job to be executed.
      * 
-     * @param string $json the json string
+     * @param string $message the json string
      * @return \UrbanIndo\Yii2\Queue\Job the job
      * @throws \yii\base\Exception if there is no route detected.
      */
-    protected function deserialize($json) {
-        $message = \yii\helpers\Json::decode($json);
-        if (!isset($message['route'])) {
+    protected function deserialize($message) {
+        $job = $this->deserializeMessage($message);
+        if (!isset($job['route'])) {
             throw new \yii\base\Exception('No route detected');
         }
-        $route = $message['route'];
-        if (isset($message['type']) && $message['type'] == Job::TYPE_CALLABLE) {
+        $route = $job['route'];
+        if (isset($job['type']) && $job['type'] == Job::TYPE_CALLABLE) {
             $type = Job::TYPE_CALLABLE;
             $serializer = new \SuperClosure\Serializer();
             $route = $serializer->unserialize($route);
         } else {
             $type = Job::TYPE_REGULAR;
         }
-        $data = \yii\helpers\ArrayHelper::getValue($message, 'data', []);
+        $data = \yii\helpers\ArrayHelper::getValue($job, 'data', []);
         return new Job([
             'route' => $route,
             'data' => $data,
         ]);
     }
-
+    
+   /**
+     * 
+     * @param type $array
+     * @return type
+     */
+    protected function deserializeMessage($array) {
+        switch($this->serializer) {
+            case self::SERIALIZER_PHP:
+                $data = unserialize($array);
+                break;
+            case self::SERIALIZER_JSON:
+                $data = \yii\helpers\Json::decode($array);
+                break;
+        }
+        if (empty($data)) {
+            throw new Exception('Can not deserialize message');
+        }
+        return $data;
+    }
+    
     /**
      * Pack job so that it can be send.
      * 
@@ -131,7 +161,26 @@ abstract class Queue extends \yii\base\Component {
             $return['route'] = $job->route;
         }
         $return['data'] = $job->data;
-        return \yii\helpers\Json::encode($return);
+        return $this->serializeMessage($return);
     }
 
+    /**
+     * 
+     * @param type $array
+     * @return type
+     */
+    protected function serializeMessage($array) {
+        switch($this->serializer) {
+            case self::SERIALIZER_PHP:
+                $data = serialize($array);
+                break;
+            case self::SERIALIZER_JSON:
+                $data = \yii\helpers\Json::encode($array);
+                break;
+        }
+        if (empty($data)) {
+            throw new Exception('Can not deserialize message');
+        }
+        return $data;
+    }
 }
