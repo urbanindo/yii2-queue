@@ -52,7 +52,7 @@ abstract class Queue extends \yii\base\Component {
      * @param Job $job the job.
      * @return boolean whether operation succeed.
      */
-    public abstract function post(&$job);
+    public abstract function post(Job &$job);
 
     /**
      * Return next job from the queue.
@@ -65,7 +65,7 @@ abstract class Queue extends \yii\base\Component {
      * 
      * @param Job $job
      */
-    public function run($job) {
+    public function run(Job $job) {
         if ($job->isCallable()) {
             $retval = $job->runCallable();
         } else {
@@ -85,7 +85,7 @@ abstract class Queue extends \yii\base\Component {
      * @param Job $job
      * @return boolean whether the operation succeed.
      */
-    public abstract function delete($job);
+    public abstract function delete(Job $job);
 
     /**
      * Deserialize job to be executed.
@@ -120,7 +120,7 @@ abstract class Queue extends \yii\base\Component {
      * @param Job $job the job.
      * @return string JSON string.
      */
-    protected function serialize($job) {
+    protected function serialize(Job $job) {
         $return = [];
         if ($job->isCallable()) {
             $return['type'] = Job::TYPE_CALLABLE;

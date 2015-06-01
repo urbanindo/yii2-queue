@@ -226,6 +226,13 @@ For example to filter by IP address, we can use something like this.
     ],
 ```
 
+## Testing
+
+To run the tests, in the root directory execute below.
+
+```
+./vendor/bin/phpunit
+```
 
 ## Road Map
 

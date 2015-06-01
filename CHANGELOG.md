@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## 2015-04-08
+## 1.2.0
+- Added tests
+- Added `MemoryQueue`, `DeferredEventHandler`, and `ActiveRecordDeferredEventHandler`.
+
+## 1.0.1
 
 ### Changed
 - Refactoring controller classes to Web, Console, and Worker.

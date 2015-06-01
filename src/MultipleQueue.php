@@ -9,6 +9,8 @@
 
 namespace UrbanIndo\Yii2\Queue;
 
+use UrbanIndo\Yii2\Queue\Job;
+
 /**
  * MultipleQueue is a queue abstraction that handles multiple queue at once.
  * 
@@ -60,7 +62,7 @@ class MultipleQueue extends Queue {
      * @param Job $job
      * @return boolean whether the operation succeed.
      */
-    public function delete($job) {
+    public function delete(Job $job) {
         return $this->strategy->delete($job);
     }
 
@@ -77,7 +79,7 @@ class MultipleQueue extends Queue {
      * @param Job $job the job.
      * @return boolean whether operation succeed.
      */
-    public function post(&$job) {
+    public function post(Job &$job) {
         return $this->postToQueue($job, 0);
     }
 
@@ -87,7 +89,7 @@ class MultipleQueue extends Queue {
      * @param integer $index the queue index.
      * @return boolean whether operation succeed.
      */
-    public function postToQueue(&$job, $index) {
+    public function postToQueue(Job &$job, $index) {
         $queue = $this->getQueue($index);
         if ($queue === null) {
             return false;

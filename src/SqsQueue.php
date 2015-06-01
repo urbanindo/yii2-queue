@@ -10,6 +10,7 @@
 namespace UrbanIndo\Yii2\Queue;
 
 use \Aws\Sqs\SqsClient;
+use UrbanIndo\Yii2\Queue\Job;
 
 /**
  * SqsQueue provides queue for AWS SQS.
@@ -83,7 +84,7 @@ class SqsQueue extends Queue {
      * @param Job $job the job model.
      * @return boolean whether operation succeed.
      */
-    public function post(&$job) {
+    public function post(Job &$job) {
         $model = $this->_client->sendMessage([
             'QueueUrl' => $this->url,
             'MessageBody' => $this->serialize($job),
@@ -102,7 +103,7 @@ class SqsQueue extends Queue {
      * @param Job $job
      * @return boolean whether the operation succeed.
      */
-    public function delete($job) {
+    public function delete(Job $job) {
         if (!empty($job->header['ReceiptHandle'])) {
             $receiptHandle = $job->header['ReceiptHandle'];
             $response = $this->_client->deleteMessage([
