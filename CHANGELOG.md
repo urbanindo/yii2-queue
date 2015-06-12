@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 1.2.1
+- Added `DeferredEventTrait`
+
 ## 1.2.0
 - Added tests
 - Added `MemoryQueue`, `DeferredEventHandler`, and `ActiveRecordDeferredEventHandler`.
