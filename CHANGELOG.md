@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 1.2.3
+- Passing scenario for model and active record.
+
 ## 1.2.2
 - Removing deprecated method `call_user_method`.
 
