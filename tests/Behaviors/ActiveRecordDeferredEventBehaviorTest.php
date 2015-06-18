@@ -14,18 +14,34 @@ class ActiveRecordDeferredEventBehaviorTest extends PHPUnit_Framework_TestCase {
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
         $this->assertEquals(0, $queue->getQueueLength());
-        $object = new TestActiveRecord();
-        $this->assertTrue($object instanceof TestActiveRecord);
-        $object->id = 1;
-        $object->name = 'start';
-        $object->save();
+        $object1 = new TestActiveRecord();
+        $this->assertTrue($object1 instanceof TestActiveRecord);
+        $object1->id = 1;
+        $object1->name = 'start';
+        $object1->save();
         $this->assertEquals(1, $queue->getQueueLength());
         $job = $queue->fetch();
         $this->assertEquals(0, $queue->getQueueLength());
         $queue->run($job);
-        $sameObject = TestActiveRecord::findOne(1);
-        $this->assertEquals('done', $sameObject->name);
+        $sameObject1 = TestActiveRecord::findOne(1);
+        $this->assertEquals('done', $sameObject1->name);
+        //
+        
+        $object2 = new TestActiveRecord();
+        $this->assertTrue($object2 instanceof TestActiveRecord);
+        $object2->id = 2;
+        $object2->name = 'start';
+        $object2->scenario = 'test';
+        $object2->save();
+        $this->assertEquals(1, $queue->getQueueLength());
+        $job = $queue->fetch();
+        $this->assertEquals(0, $queue->getQueueLength());
+        $queue->run($job);
+        $sameObject2 = TestActiveRecord::findOne(2);
+        $this->assertEquals('test', $sameObject2->name);
+        
     }
+    
 }
 
 class TestActiveRecord extends \yii\db\ActiveRecord {
@@ -45,8 +61,16 @@ class TestActiveRecord extends \yii\db\ActiveRecord {
         ];
     }
     
+    public function scenarios() {
+        return [
+            'default' => ['name', 'id'],
+            'test' => ['name', 'id'],
+        ];
+    }
+
+
     public function deferAfterInsert() {
-        $this->name = 'done';
+        $this->name = $this->scenario == 'test' ? 'test' : 'done';
         $this->update(false);
     }
     

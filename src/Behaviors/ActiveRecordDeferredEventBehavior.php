@@ -62,13 +62,14 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
         } else {
             $serializer = null;
         }
-        
+        $scenario = $this->owner->scenario;
         if ($eventName == ActiveRecord::EVENT_AFTER_DELETE) {
             $attributes = $this->owner->getAttributes();
             $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
-                'route' => function() use ($class, $attributes, $handlers, $eventName, $serializer) {
+                'route' => function() use ($class, $attributes, $handlers, $eventName, $serializer, $scenario) {
                     $object = \Yii::createObject($class);
                     /* @var $object ActiveRecord */
+                    $object->scenario = $scenario;
                     $object->setAttributes($attributes, false);
                     if ($handlers) {
                         $handler = $handlers[$eventName];
@@ -93,8 +94,9 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
         } else {
             $pk = $this->owner->getPrimaryKey();
             $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
-                'route' => function() use ($class, $pk, $handlers, $eventName, $serializer) {
+                'route' => function() use ($class, $pk, $handlers, $eventName, $serializer, $scenario) {
                     $object = $class::findOne($pk);
+                    $object->scenario = $scenario;
                     if ($object === null) {
                         throw new Exception("Model is not found");
                     }

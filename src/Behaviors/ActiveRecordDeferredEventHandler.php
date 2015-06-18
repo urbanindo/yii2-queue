@@ -28,6 +28,7 @@ abstract class ActiveRecordDeferredEventHandler extends DeferredEventHandler {
         $class = get_class($this->owner);
         $pk = $this->owner->getPrimaryKey();
         $attributes = $this->owner->getAttributes();
+        $scenario = $this->owner->scenario;
         $eventName = $event->name;
         $queue = $this->queue;
         $handler = clone $this;
@@ -36,20 +37,22 @@ abstract class ActiveRecordDeferredEventHandler extends DeferredEventHandler {
         /* @var $queue Queue */
         if ($eventName == ActiveRecord::EVENT_AFTER_DELETE) {
             $queue->post(new \UrbanIndo\Yii2\Queue\Job([
-                'route' => function() use ($class, $pk, $attributes, $handler, $eventName) {
+                'route' => function() use ($class, $pk, $attributes, $handler, $eventName, $scenario) {
                     $object = \Yii::createObject($class);
                     /* @var $object ActiveRecord */
                     $object->setAttributes($attributes, false);
+                    $object->scenario = $scenario;
                     $handler->handleEvent($object);
                 }
             ]));            
         } else {
             $queue->post(new \UrbanIndo\Yii2\Queue\Job([
-                'route' => function() use ($class, $pk, $attributes, $handler, $eventName) {
+                'route' => function() use ($class, $pk, $attributes, $handler, $eventName, $scenario) {
                     $object = $class::findOne($pk);
                     if ($object === null) {
                         throw new Exception("Model is not found");
                     }
+                    $object->scenario = $scenario;
                     /* @var $object ActiveRecord */
                     $handler->handleEvent($object);
                 }

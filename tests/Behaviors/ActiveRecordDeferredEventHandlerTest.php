@@ -14,16 +14,31 @@ class ActiveRecordDeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
         $this->assertEquals(0, $queue->getQueueLength());
-        $model = new ActiveRecordDeferredEventHandlerTestActiveRecord();
-        $model->id = 1;
-        $model->name = 'test';
-        $model->save(false);
+        $object1 = new ActiveRecordDeferredEventHandlerTestActiveRecord();
+        $object1->id = 1;
+        $object1->name = 'test';
+        $object1->save(false);
         $this->assertEquals(1, $queue->getQueueLength());
         $job = $queue->fetch();
         $this->assertEquals(0, $queue->getQueueLength());
         $queue->run($job);
-        $model->refresh();
-        $this->assertEquals('done', $model->name);
+        $object1->refresh();
+        $this->assertEquals('done', $object1->name);
+        
+        
+        $this->assertEquals(0, $queue->getQueueLength());
+        $object2 = new ActiveRecordDeferredEventHandlerTestActiveRecord();
+        $object2->id = 2;
+        $object2->name = 'test';
+        $object2->scenario = 'test';
+        $object2->save(false);
+        $this->assertEquals(1, $queue->getQueueLength());
+        $job = $queue->fetch();
+        $this->assertEquals(0, $queue->getQueueLength());
+        $queue->run($job);
+        $object2->refresh();
+        $this->assertEquals('test', $object2->name);
+        
     }
     
 }
@@ -49,9 +64,16 @@ class ActiveRecordDeferredEventHandlerTestActiveRecord extends \yii\db\ActiveRec
             ]
         ];
     }
+
+    public function scenarios() {
+        return [
+            'default' => ['name', 'id'],
+            'test' => ['name', 'id'],
+        ];
+    }
     
     public function updateModel() {
-        $this->name = 'done';
+        $this->name = $this->scenario == 'test' ? 'test' : 'done';
         $this->update(false);
     }
 }
