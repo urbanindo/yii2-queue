@@ -148,10 +148,10 @@ class DeferredEventBehavior extends \yii\base\Behavior {
                             $unserialized = $serializer->unserialize($handler);
                             $unserialized($object);
                         } catch (Exception $exc) {
-                            return call_user_method($handler, $object);
+                            return call_user_func([$object, $handler]);
                         }
                     } else {
-                        return call_user_method($handler, $object);
+                        return call_user_func([$object, $handler]);
                     }
                 } else if ($object instanceof DeferredEventInterface) {
                     /* @var $object DeferredEventInterface */
