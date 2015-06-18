@@ -50,7 +50,7 @@ abstract class ActiveRecordDeferredEventHandler extends DeferredEventHandler {
                 'route' => function() use ($class, $pk, $attributes, $handler, $eventName, $scenario) {
                     $object = $class::findOne($pk);
                     if ($object === null) {
-                        throw new Exception("Model is not found");
+                        throw new \Exception("Model is not found");
                     }
                     $object->scenario = $scenario;
                     /* @var $object ActiveRecord */

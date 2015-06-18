@@ -77,7 +77,7 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
                             try {
                                 $unserialized = $serializer->unserialize($handler);
                                 $unserialized($object);
-                            } catch (Exception $exc) {
+                            } catch (\Exception $exc) {
                                 return call_user_func([$object, $handler]);
                             }
                         } else {
@@ -87,7 +87,7 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
                         /* @var $object DeferredEventInterface */
                         return $object->handleDeferredEvent($eventName);
                     } else {
-                        throw new Exception("Model is not instance of DeferredEventInterface");
+                        throw new \Exception("Model is not instance of DeferredEventInterface");
                     }
                 }
             ]));
@@ -98,7 +98,7 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
                     $object = $class::findOne($pk);
                     $object->scenario = $scenario;
                     if ($object === null) {
-                        throw new Exception("Model is not found");
+                        throw new \Exception("Model is not found");
                     }
                     if ($handlers) {
                         $handler = $handlers[$eventName];
@@ -106,7 +106,7 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
                             try {
                                 $unserialized = $serializer->unserialize($handler);
                                 $unserialized($object);
-                            } catch (Exception $exc) {
+                            } catch (\Exception $exc) {
                                 return call_user_func([$object, $handler]);
                             }
                         } else {
@@ -116,7 +116,7 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
                         /* @var $object DeferredEventInterface */
                         return $object->handleDeferredEvent($eventName);
                     } else {
-                        throw new Exception("Model is not instance of DeferredEventInterface");
+                        throw new \Exception("Model is not instance of DeferredEventInterface");
                     }
                 }
             ]));

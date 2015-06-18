@@ -100,14 +100,14 @@ class DeferredEventBehavior extends \yii\base\Behavior {
 
     /**
      * Initialize the queue.
-     * @throws Exception
+     * @throws \Exception
      */
     public function init() {
         parent::init();
         $queueName = $this->queue;
         $this->queue = Yii::$app->get($queueName);
         if (!$this->queue instanceof \UrbanIndo\Yii2\Queue\Queue) {
-            throw new Exception("Can not found queue component named '{$queueName}'");
+            throw new \Exception("Can not found queue component named '{$queueName}'");
         }
         $this->_hasEventHandlers = !\yii\helpers\ArrayHelper::isIndexed($this->events,
                         true);
@@ -130,7 +130,7 @@ class DeferredEventBehavior extends \yii\base\Behavior {
     public function postDeferredEvent($event) {
         $object = clone $this->owner;
         if (!$this->_hasEventHandlers && !$object instanceof DeferredEventInterface) {
-            throw new Exception("Model is not instance of DeferredEventInterface");
+            throw new \Exception("Model is not instance of DeferredEventInterface");
         }
         $handlers = ($this->_hasEventHandlers) ? $this->events : false;
         $eventName = $event->name;
@@ -147,7 +147,7 @@ class DeferredEventBehavior extends \yii\base\Behavior {
                         try {
                             $unserialized = $serializer->unserialize($handler);
                             $unserialized($object);
-                        } catch (Exception $exc) {
+                        } catch (\Exception $exc) {
                             return call_user_func([$object, $handler]);
                         }
                     } else {
@@ -157,7 +157,7 @@ class DeferredEventBehavior extends \yii\base\Behavior {
                     /* @var $object DeferredEventInterface */
                     return $object->handleDeferredEvent($eventName);
                 } else {
-                    throw new Exception("Model doesn't have handlers for the event or is not instance of DeferredEventInterface");
+                    throw new \Exception("Model doesn't have handlers for the event or is not instance of DeferredEventInterface");
                 }
             }
         ]));
