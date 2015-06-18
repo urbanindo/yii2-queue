@@ -8,7 +8,6 @@
 namespace UrbanIndo\Yii2\Queue\Behaviors;
 
 use Yii;
-use Exception;
 
 /**
  * DeferredEventHandler handles the event inside the behavior instance, instead
@@ -35,7 +34,7 @@ abstract class DeferredEventHandler extends \yii\base\Behavior {
         $queueName = $this->queue;
         $this->queue = Yii::$app->get($queueName);
         if (!$this->queue instanceof \UrbanIndo\Yii2\Queue\Queue) {
-            throw new Exception("Can not found queue component named '{$queueName}'");
+            throw new \Exception("Can not found queue component named '{$queueName}'");
         }
     }
     
