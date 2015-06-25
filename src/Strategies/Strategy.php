@@ -29,7 +29,7 @@ abstract class Strategy extends \yii\base\Object {
      * Sets the queue.
      * @param \UrbanIndo\Yii2\Queue\MultipleQueue $queue
      */
-    public function setQueue($queue) {
+    public function setQueue(\UrbanIndo\Yii2\Queue\MultipleQueue $queue) {
         $this->_queue = $queue;
     }
 
@@ -57,10 +57,10 @@ abstract class Strategy extends \yii\base\Object {
     /**
      * Delete the job from the queue.
      * 
-     * @param Job $job
+     * @param \UrbanIndo\Yii2\Queue\Job $job
      * @return boolean whether the operation succeed.
      */
-    public function delete($job) {
+    public function delete(\UrbanIndo\Yii2\Queue\Job $job) {
         $index = \yii\helpers\ArrayHelper::getValue($job->header,
                         self::HEADER_MULTIPLE_QUEUE_INDEX, null);
         if (!isset($index)) {

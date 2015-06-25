@@ -47,6 +47,7 @@ class MultipleQueue extends Queue {
             ];
         }
         $this->strategy = \Yii::createObject($this->strategy);
+        $this->strategy->setQueue($this);
     }
 
     /**
