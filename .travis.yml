@@ -6,7 +6,6 @@ php:
   - nightly
 
 install:
-  - composer self-update
-  - composer install --prefer-dist
+  - travis_retry composer self-update && composer --version
+  - travis_retry composer install --prefer-source --no-interaction
 
-script: phpunit --debug
