@@ -43,6 +43,9 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
      * @return Job
      */
     public function fetch() {
+        if ($this->getQueueLength() == 0) {
+            return false;
+        }
         $job = array_pop($this->_queues);
         return $job;
     }

@@ -16,6 +16,11 @@ namespace UrbanIndo\Yii2\Queue\Strategies;
  * @since 2015.02.25
  */
 class RandomStrategy extends Strategy {
+    
+    public function init() {
+        parent::init();
+        srand();
+    }
 
     /**
      * The number of attempt before returning false.
@@ -31,7 +36,7 @@ class RandomStrategy extends Strategy {
         $attempt = 0;
         $count = count($this->_queue->queues);
         while ($attempt < $this->maxAttempt) {
-            $index = rand(0, $count);
+            $index = rand(0, $count - 1);
             $queue = $this->_queue->getQueue($index);
             $job = $queue->fetch();
             if ($job !== false) {
