@@ -26,6 +26,14 @@ class ActiveRecordDeferredEventBehaviorTest extends PHPUnit_Framework_TestCase {
         $sameObject1 = TestActiveRecord::findOne(1);
         $this->assertEquals('done', $sameObject1->name);
         //
+        $object1->name = 'test';
+        $object1->save(false);
+        $this->assertEquals(1, $queue->getQueueLength());
+        $job = $queue->fetch();
+        $this->assertEquals(0, $queue->getQueueLength());
+        $queue->run($job);
+        $sameObject1 = TestActiveRecord::findOne(1);
+        $this->assertEquals('updated', $sameObject1->name);
         
         $object2 = new TestActiveRecord();
         $this->assertTrue($object2 instanceof TestActiveRecord);
@@ -56,6 +64,8 @@ class TestActiveRecord extends \yii\db\ActiveRecord {
                 'class' => UrbanIndo\Yii2\Queue\Behaviors\ActiveRecordDeferredEventBehavior::class,
                 'events' => [
                     self::EVENT_AFTER_INSERT => 'deferAfterInsert',
+                    self::EVENT_AFTER_UPDATE => 'deferAfterUpdate',
+                    self::EVENT_AFTER_DELETE => 'deferAfterDelete',
                 ]
             ]
         ];
@@ -68,10 +78,14 @@ class TestActiveRecord extends \yii\db\ActiveRecord {
         ];
     }
 
-
     public function deferAfterInsert() {
         $this->name = $this->scenario == 'test' ? 'test' : 'done';
-        $this->update(false);
+        $this->updateAttributes(['name']);
+    }
+    
+    public function deferAfterUpdate() {
+        $this->name = 'updated';
+        $this->updateAttributes(['name']);
     }
     
 }
