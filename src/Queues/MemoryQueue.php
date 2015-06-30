@@ -22,17 +22,17 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
     /**
      * @var Job[]
      */
-    private $_queues = [];
+    private $_jobs = [];
 
     /**
      * @param Job $job
      * @return boolean
      */
     public function delete(Job $job) {
-        foreach($this->_queues as $key => $val) {
+        foreach($this->_jobs as $key => $val) {
             if ($val->id == $job->id) {
-                unset($this->_queues[$key]);
-                $this->_queues = array_values($this->_queues);
+                unset($this->_jobs[$key]);
+                $this->_jobs = array_values($this->_jobs);
                 return true;
             }
         }
@@ -46,7 +46,7 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
         if ($this->getQueueLength() == 0) {
             return false;
         }
-        $job = array_pop($this->_queues);
+        $job = array_pop($this->_jobs);
         return $job;
     }
 
@@ -55,7 +55,7 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
      */
     public function post(Job &$job) {
         $job->id = mt_rand(0, 65535);
-        $this->_queues[] = $job;
+        $this->_jobs[] = $job;
         return true;
     }
     
@@ -64,13 +64,20 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
      * @return integer
      */
     public function getQueueLength() {
-        return count($this->_queues);
+        return count($this->_jobs);
     }
 
     /**
      * 
      */
     public function emptyQueue() {
-        $this->_queues = [];
+        $this->_jobs = [];
+    }
+    
+    /**
+     * @return Job[]
+     */
+    public function getJobs() {
+        return $this->_jobs;
     }
 }
