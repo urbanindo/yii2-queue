@@ -22,6 +22,20 @@ use yii\base\InlineAction;
  * @since 2015.02.24
  */
 abstract class Controller extends \yii\base\Controller {
+    
+    /**
+     * Stores all params even some elements are not assigned in the action method.
+     * @var array
+     */
+    private $_params = [];
+    
+    /**
+     * Returns action params from the queue job.
+     * @return array
+     */
+    public function getActionParams() {
+        return $this->_params;
+    }
 
     /**
      * Binds the parameters to the action.
@@ -34,6 +48,8 @@ abstract class Controller extends \yii\base\Controller {
      * @throws \yii\base\Exception if there are unknown options or missing arguments
      */
     public function bindActionParams($action, $params) {
+        $this->_params = $params;
+        
         if ($action instanceof InlineAction) {
             $method = new \ReflectionMethod($this, $action->actionMethod);
         } else {
