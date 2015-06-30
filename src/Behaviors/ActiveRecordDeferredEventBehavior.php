@@ -96,10 +96,10 @@ class ActiveRecordDeferredEventBehavior extends DeferredEventBehavior {
             $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
                 'route' => function() use ($class, $pk, $handlers, $eventName, $serializer, $scenario) {
                     $object = $class::findOne($pk);
-                    $object->scenario = $scenario;
                     if ($object === null) {
-                        throw new \Exception("Model is not found");
+                        throw new \Exception("Model #{$pk} is not found");
                     }
+                    $object->scenario = $scenario;
                     if ($handlers) {
                         $handler = $handlers[$eventName];
                         if ($serializer !== null) {
