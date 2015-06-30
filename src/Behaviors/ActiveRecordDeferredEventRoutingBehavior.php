@@ -50,6 +50,7 @@ class ActiveRecordDeferredEventRoutingBehavior extends DeferredEventRoutingBehav
         }
         $route = $handler[0];
         unset($handler[0]);
+        $handler['scenario'] = $this->owner->getScenario();
         $data = $handler;
         $this->queue->post(new \UrbanIndo\Yii2\Queue\Job([
             'route' => $route,

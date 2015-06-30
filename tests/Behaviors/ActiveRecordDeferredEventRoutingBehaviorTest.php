@@ -27,6 +27,7 @@ class ActiveRecordDeferredEventRoutingBehaviorTest extends PHPUnit_Framework_Tes
         $this->assertEquals(0, $queue->getQueueLength());
         $this->assertEquals([
             'id' => 5,
+            'scenario' => 'default',
         ], $job->data);
         $model->trigger('eventTest2');
         $this->assertEquals(1, $queue->getQueueLength());
@@ -35,7 +36,8 @@ class ActiveRecordDeferredEventRoutingBehaviorTest extends PHPUnit_Framework_Tes
         $this->assertFalse($job->isCallable());
         $this->assertEquals(0, $queue->getQueueLength());
         $this->assertEquals([
-            'halo' => 5
+            'halo' => 5,
+            'scenario' => 'default',
         ], $job->data);
         
     }
