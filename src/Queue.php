@@ -82,7 +82,7 @@ abstract class Queue extends \yii\base\Component {
             try {
                 $retval = $this->module->runAction($job->route, $job->data);
             } catch (\Exception $e) {
-                throw new \yii\base\Exception("No route detected for {$job->route}",500, $e);
+                throw new \yii\base\Exception("Error running route {$job->route}: {$e->getMessage()}", 500);
             }
         }
         if ($retval !== false) {
