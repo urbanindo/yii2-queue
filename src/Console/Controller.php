@@ -62,7 +62,7 @@ class Controller extends \yii\console\Controller {
      * 
      * @return \UrbanIndo\Yii2\Queue\Queue
      */
-    private function getQueue() {
+    protected function getQueue() {
         if (!isset($this->_queue)) {
             $this->_queue = \Yii::$app->get($this->queue);
         }
@@ -73,7 +73,7 @@ class Controller extends \yii\console\Controller {
      * Returns the script path.
      * @return string
      */
-    private function getScriptPath() {
+    protected function getScriptPath() {
         return getcwd() . DIRECTORY_SEPARATOR . $_SERVER['argv'][0];
     }
 
@@ -103,7 +103,7 @@ class Controller extends \yii\console\Controller {
      * @param integer $timeout the timeout
      * @param array $env the environment to be passed.
      */
-    private function runQueueFetching($command, $cwd = null, $timeout = null,
+    protected function runQueueFetching($command, $cwd = null, $timeout = null,
             $env = []) {
         $process = new \Symfony\Component\Process\Process($command,
                 isset($cwd) ? $cwd : getcwd(), $env, null, $timeout);
@@ -124,7 +124,7 @@ class Controller extends \yii\console\Controller {
     /**
      * Initialize signal handler for the process.
      */
-    private function initSignalHandler() {
+    protected function initSignalHandler() {
         $signalHandler = function ($signal) {
             switch ($signal) {
                 case SIGTERM:
@@ -195,7 +195,7 @@ class Controller extends \yii\console\Controller {
      * @param string $data the JSON data.
      * @return Job
      */
-    private function createJob($route, $data = '{}') {
+    protected function createJob($route, $data = '{}') {
         return new Job([
             'route' => $route,
             'data' => \yii\helpers\Json::decode($data),
