@@ -76,16 +76,19 @@ abstract class Queue extends \yii\base\Component {
      * @param Job $job
      */
     public function run(Job $job) {
-        if ($job->isCallable()) {
-            $retval = $job->runCallable();
-        } else {
-            try {
+        \Yii::info('Running job', 'yii2queue');
+        try {
+            if ($job->isCallable()) {
+                $retval = $job->runCallable();
+            } else {
                 $retval = $this->module->runAction($job->route, $job->data);
-            } catch (\Exception $e) {
-                throw new \yii\base\Exception("Error running route {$job->route}: {$e->getMessage()}", 500);
             }
+        } catch (\Exception $e) {
+            \Yii::error("Fatal Error: Error running route {$job->route}. Message: {$e->getMessage()}", 'yii2queue');
+            throw new \yii\base\Exception("Error running route {$job->route}. Message: {$e->getMessage()}. File: {$e->getFile()}[{$e->getLine()}]. Stack Trace: {$e->getTraceAsString()}", 500);
         }
         if ($retval !== false) {
+            \Yii::info('Deleting job', 'yii2queue');
             $this->delete($job);
         }
     }
