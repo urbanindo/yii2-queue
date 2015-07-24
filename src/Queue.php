@@ -84,8 +84,9 @@ abstract class Queue extends \yii\base\Component {
                 $retval = $this->module->runAction($job->route, $job->data);
             }
         } catch (\Exception $e) {
-            \Yii::error("Fatal Error: Error running route {$job->route}. Message: {$e->getMessage()}", 'yii2queue');
-            throw new \yii\base\Exception("Error running route {$job->route}. Message: {$e->getMessage()}. File: {$e->getFile()}[{$e->getLine()}]. Stack Trace: {$e->getTraceAsString()}", 500);
+            $route = $this->serialize($job);
+            \Yii::error("Fatal Error: Error running route {$route}. Message: {$e->getMessage()}", 'yii2queue');
+            throw new \yii\base\Exception("Error running route {$route}. Message: {$e->getMessage()}. File: {$e->getFile()}[{$e->getLine()}]. Stack Trace: {$e->getTraceAsString()}", 500);
         }
         if ($retval !== false) {
             \Yii::info('Deleting job', 'yii2queue');
