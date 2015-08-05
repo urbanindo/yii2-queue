@@ -44,11 +44,11 @@ class Controller extends \yii\web\Controller {
         }
         /* @var $queue \UrbanIndo\Yii2\Queue\Queue */
         $queue = \Yii::$app->get($this->queueComponent);
-
-        if ($queue->post(($job = new Job([
-                    'route' => $route,
-                    'data' => $data
-                ])))) {
+        $job = new Job([
+            'route' => $route,
+            'data' => $data
+        ]);
+        if ($queue->post($job)) {
             return ['status' => 'okay', 'jobId' => $job->id];
         } else {
             throw new \yii\web\ServerErrorHttpException('Failed to post job');
