@@ -77,7 +77,7 @@ e.g.
 
 ```php
 class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
-    
+
     public function actionBar($param1, $param2){
         echo $param1;
     }
@@ -92,7 +92,7 @@ e.g.
 
 ```php
 class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
-    
+
     public function actionBar($param1, $param2){
         try {
         } catch (\Exception $ex){
@@ -121,7 +121,7 @@ use UrbanIndo\Yii2\Queue\Job;
 
 $route = 'foo/bar';
 $data = ['param1' => 'foo', 'param2' => 'bar'];
-Yii::$app->queue->post(new Job($route, $data));
+Yii::$app->queue->post(new Job(['route' => $route, 'data' => $data]));
 ```
 
 Job can also be posted from the console. The data in the second parameter is in
@@ -152,7 +152,7 @@ To use this, add behavior in a component and implement the defined event handler
             [
                 'class' => \UrbanIndo\Yii2\Queue\Behaviors\DeferredEventBehavior::class,
                 'events' => [
-                    self::EVENT_AFTER_VALIDATE => 'deferAfterValidate', 
+                    self::EVENT_AFTER_VALIDATE => 'deferAfterValidate',
                 ]
             ]
         ]);
@@ -182,7 +182,7 @@ object whose attributes are assigned from the attributes of the original object.
 
 ### Web End Point
 
-We can use web endpoint to use the queue by adding `\UrbanIndo\Yii2\Queue\Web\Controller` 
+We can use web endpoint to use the queue by adding `\UrbanIndo\Yii2\Queue\Web\Controller`
 to the controller map.
 
 For example
