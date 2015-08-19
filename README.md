@@ -57,10 +57,11 @@ the task in the component. For example, queue using AWS SQS
         'class' => 'UrbanIndo\Yii2\Queue\SqsQueue',
         'module' => 'task',
         'url' => 'https://sqs.ap-southeast-1.amazonaws.com/123456789012/queue',
-            'config' => [
-                'key' => 'AKIA1234567890123456',
-                'secret' => '1234567890123456789012345678901234567890',
-            'region' => 'ap-southeast-1',
+		'config' => [
+			'key' => 'AKIA1234567890123456',
+			'secret' => '1234567890123456789012345678901234567890',
+			'region' => 'ap-southeast-1',
+			'version' => 'latest'
         ],
     ]
 ]
@@ -77,7 +78,7 @@ e.g.
 
 ```php
 class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
-    
+
     public function actionBar($param1, $param2){
         echo $param1;
     }
@@ -92,7 +93,7 @@ e.g.
 
 ```php
 class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
-    
+
     public function actionBar($param1, $param2){
         try {
         } catch (\Exception $ex){
@@ -152,7 +153,7 @@ To use this, add behavior in a component and implement the defined event handler
             [
                 'class' => \UrbanIndo\Yii2\Queue\Behaviors\DeferredEventBehavior::class,
                 'events' => [
-                    self::EVENT_AFTER_VALIDATE => 'deferAfterValidate', 
+                    self::EVENT_AFTER_VALIDATE => 'deferAfterValidate',
                 ]
             ]
         ]);
@@ -182,7 +183,7 @@ object whose attributes are assigned from the attributes of the original object.
 
 ### Web End Point
 
-We can use web endpoint to use the queue by adding `\UrbanIndo\Yii2\Queue\Web\Controller` 
+We can use web endpoint to use the queue by adding `\UrbanIndo\Yii2\Queue\Web\Controller`
 to the controller map.
 
 For example
