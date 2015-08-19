@@ -122,7 +122,7 @@ use UrbanIndo\Yii2\Queue\Job;
 
 $route = 'foo/bar';
 $data = ['param1' => 'foo', 'param2' => 'bar'];
-Yii::$app->queue->post(new Job($route, $data));
+Yii::$app->queue->post(new Job(['route' => $route, 'data' => $data]));
 ```
 
 Job can also be posted from the console. The data in the second parameter is in
