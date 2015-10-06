@@ -84,9 +84,17 @@ abstract class Queue extends \yii\base\Component {
                 $retval = $this->module->runAction($job->route, $job->data);
             }
         } catch (\Exception $e) {
-            $route = $this->serialize($job);
-            \Yii::error("Fatal Error: Error running route {$route}. Message: {$e->getMessage()}", 'yii2queue');
-            throw new \yii\base\Exception("Error running route {$route}. Message: {$e->getMessage()}. File: {$e->getFile()}[{$e->getLine()}]. Stack Trace: {$e->getTraceAsString()}", 500);
+            if ($job->isCallable()) {
+                if (isset($job->header['signature']) && isset($job->header['signature']['route'])) {
+                    $id = $job->id . " " . \yii\helpers\Json::encode($job->header['signature']['route']);
+                } else {
+                    $id = $job->id . ' callable';
+                }
+            } else {
+                $id = $job->route;
+            }
+            \Yii::error("Fatal Error: Error running route '{$id}'. Message: {$e->getMessage()}", 'yii2queue');
+            throw new \yii\base\Exception("Error running route '{$id}'. Message: {$e->getMessage()}. File: {$e->getFile()}[{$e->getLine()}]. Stack Trace: {$e->getTraceAsString()}", 500);
         }
         if ($retval !== false) {
             \Yii::info('Deleting job', 'yii2queue');
@@ -114,18 +122,19 @@ abstract class Queue extends \yii\base\Component {
             throw new \yii\base\Exception('No route detected');
         }
         $route = $job['route'];
+        $signature = [];
         if (isset($job['type']) && $job['type'] == Job::TYPE_CALLABLE) {
-            $type = Job::TYPE_CALLABLE;
             $serializer = new \SuperClosure\Serializer();
+            $signature['route'] = $route;
             $route = $serializer->unserialize($route);
-        } else {
-            $type = Job::TYPE_REGULAR;
         }
         $data = \yii\helpers\ArrayHelper::getValue($job, 'data', []);
-        return new Job([
+        $obj = new Job([
             'route' => $route,
             'data' => $data,
         ]);
+        $obj->header['signature'] = $signature;
+        return $obj;
     }
     
    /**
@@ -158,7 +167,7 @@ abstract class Queue extends \yii\base\Component {
         $return = [];
         if ($job->isCallable()) {
             $return['type'] = Job::TYPE_CALLABLE;
-            $serializer = new \SuperClosure\Serializer();
+            $serializer = new \SuperClosure\Serializer();            
             $return['route'] = $serializer->serialize($job->route);
         } else {
             $return['type'] = Job::TYPE_REGULAR;
