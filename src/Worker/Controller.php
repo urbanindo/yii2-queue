@@ -56,22 +56,25 @@ abstract class Controller extends \yii\base\Controller {
             $method = new \ReflectionMethod($action, 'run');
         }
 
-        $args = array_values($params);
-
+        $args = $params;
+        
         $missing = [];
+        
         foreach ($method->getParameters() as $i => $param) {
-            if ($param->isArray() && isset($args[$i])) {
-                $args[$i] = preg_split('/\s*,\s*/', $args[$i]);
+            /* @var $param \ReflectionParameter */
+            $name = $param->getName();
+            if ($param->isArray() && isset($params[$name])) {
+                $args[$name] = preg_split('/\s*,\s*/', $params[$name]);
             }
-            if (!isset($args[$i])) {
+            if (!isset($args[$name])) {
                 if ($param->isDefaultValueAvailable()) {
-                    $args[$i] = $param->getDefaultValue();
+                    $args[$name] = $param->getDefaultValue();
                 } else {
-                    $missing[] = $param->getName();
+                    $missing[] = $name;
                 }
             }
         }
-
+        
         if (!empty($missing)) {
             throw new \Exception(\Yii::t('yii',
                     'Missing required arguments: {params}',
