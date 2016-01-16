@@ -20,6 +20,12 @@ class Event extends \yii\base\Event
     public $job;
     
     /**
+     * The return value after a job is being executed.
+     * @var mixed
+     */
+    public $returnValue;
+    
+    /**
      * Whether the next process should continue or not.
      * @var boolean
      */

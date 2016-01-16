@@ -57,6 +57,16 @@ abstract class Queue extends \yii\base\Component
      * Event executed after a job is being deleted from the queue.
      */
     const EVENT_AFTER_DELETE = 'afterDelete';
+    
+    /**
+     * Event executed before a job is being executed.
+     */
+    const EVENT_BEFORE_RUN = 'beforeRun';
+
+    /**
+     * Event executed after a job is being executed.
+     */
+    const EVENT_AFTER_RUN = 'afterRun';
 
     /**
      * The module where the task is located.
@@ -137,7 +147,15 @@ abstract class Queue extends \yii\base\Component
      */
     public function fetch()
     {
-        return $this->fetchJob();
+        $this->trigger(self::EVENT_BEFORE_FETCH);
+        
+        $job = $this->fetchJob();
+        if ($job == false) {
+            return false;
+        }
+        
+        $this->trigger(self::EVENT_AFTER_FETCH, new Event(['job' => $job]));
+        return $job;
     }
     
     /**
@@ -155,6 +173,10 @@ abstract class Queue extends \yii\base\Component
      */
     public function run(Job $job)
     {
+        $this->trigger(self::EVENT_BEFORE_RUN, $beforeEvent = new Event(['job' => $job]));
+        if (!$beforeEvent->isValid) {
+            return false;
+        }
         \Yii::info('Running job', 'yii2queue');
         try {
             if ($job->isCallable()) {
@@ -180,6 +202,9 @@ abstract class Queue extends \yii\base\Component
                 500
             );
         }
+        
+        $this->trigger(self::EVENT_AFTER_RUN, new Event(['job' => $job, 'returnValue' => $retval]));
+        
         if ($retval !== false) {
             \Yii::info('Deleting job', 'yii2queue');
             $this->delete($job);
@@ -195,7 +220,18 @@ abstract class Queue extends \yii\base\Component
      */
     public function delete(Job $job)
     {
-        return $this->deleteJob($job);
+        $this->trigger(self::EVENT_BEFORE_DELETE, $beforeEvent = new Event(['job' => $job]));
+        if (!$beforeEvent->isValid) {
+            return false;
+        }
+        
+        $return = $this->deleteJob($job);
+        if (!$return) {
+            return false;
+        }
+        
+        $this->trigger(self::EVENT_AFTER_DELETE, new Event(['job' => $job]));
+        return true;
     }
     
     /**

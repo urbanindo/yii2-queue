@@ -4,7 +4,7 @@ class QueueTest extends PHPUnit_Framework_TestCase {
     
     public function testQueueCatchingException() {
         $this->setExpectedException(\yii\base\Exception::class);
-         $queue = Yii::createObject([
+        $queue = Yii::createObject([
             'class' => '\UrbanIndo\Yii2\Queue\Queues\MemoryQueue'
         ]);
          
