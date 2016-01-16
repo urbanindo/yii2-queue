@@ -1,8 +1,7 @@
 <?php
-
 /**
  * QueueController class file.
- * 
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.24
  */
@@ -10,81 +9,81 @@
 namespace UrbanIndo\Yii2\Queue\Console;
 
 use UrbanIndo\Yii2\Queue\Job;
+use UrbanIndo\Yii2\Queue\Queue;
 
 /**
  * QueueController handles console command for running the queue.
- * 
+ *
  * To use the controller, update the controllerMap.
- * 
+ *
  * return [
  *    // ...
  *     'controllerMap' => [
  *         'queue' => 'UrbanIndo\Yii2\Queue\Console\QueueController'
  *     ],
  * ];
- * 
+ *
  * To run
- * 
+ *
  * yii queue
  *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.24
  */
-class Controller extends \yii\console\Controller {
+class Controller extends \yii\console\Controller
+{
 
     /**
-     * @var string the name of the queue component. default to 'queue'.
+     * @var string|array|Queue the name of the queue component. default to 'queue'.
      */
     public $queue = 'queue';
 
-    /*
+    /**
      * @var string the name of the command.
      */
     private $_name = 'queue';
-
+    
     /**
-     * @var \UrbanIndo\Yii2\Queue\Queue stores the queue component.
+     * @return void
      */
-    private $_queue = null;
-
-    /**
-     * @inheritdoc
-     */
-    public function options($actionID) {
-        return array_merge(parent::options($actionID),
-                [
-            'queue'
-        ]);
+    public function init()
+    {
+        parent::init();
+        $this->queue = \yii\di\Instance::ensure($this->queue, Queue::className());
     }
 
     /**
-     * Returns the queue component.
-     * 
-     * @return \UrbanIndo\Yii2\Queue\Queue
+     * @inheritdoc
+     * @param string $actionID The action id of the current request.
+     * @return array the names of the options valid for the action
      */
-    protected function getQueue() {
-        if (!isset($this->_queue)) {
-            $this->_queue = \Yii::$app->get($this->queue);
-        }
-        return $this->_queue;
+    public function options($actionID)
+    {
+        return array_merge(parent::options($actionID), [
+            'queue'
+        ]);
     }
 
     /**
      * Returns the script path.
      * @return string
      */
-    protected function getScriptPath() {
+    protected function getScriptPath()
+    {
         return getcwd() . DIRECTORY_SEPARATOR . $_SERVER['argv'][0];
     }
 
     /**
      * This will continuously run new subprocesses to fetch job from the queue.
-     * 
-     * @param string $cwd the working directory.
-     * @param integer $timeout timeout.
-     * @param array $env the environment to passed to the sub process. The format for each element is 'KEY=VAL'
+     *
+     * @param string  $cwd     The working directory.
+     * @param integer $timeout Timeout.
+     * @param array   $env     The environment to passed to the sub process.
+     * The format for each element is 'KEY=VAL'.
+     * @return void
      */
-    public function actionListen($cwd = null, $timeout = null, $env = []) {
+    public function actionListen($cwd = null, $timeout = null, $env = [])
+    {
         $this->stdout("Listening to queue...\n");
         $this->initSignalHandler();
         $command = PHP_BINARY . " {$this->getScriptPath()} {$this->_name}/run";
@@ -93,20 +92,30 @@ class Controller extends \yii\console\Controller {
             $this->stdout("Running new process...\n");
             $this->runQueueFetching($command, $cwd, $timeout, $env);
         }
-        $this->stdout("Exiting...");
+        $this->stdout("Exiting...\n");
     }
 
     /**
      * Run the queue fetching process.
-     * @param string $command the command.
-     * @param string $cwd the working directory
-     * @param integer $timeout the timeout
-     * @param array $env the environment to be passed.
+     * @param string  $command The command.
+     * @param string  $cwd     The working directory.
+     * @param integer $timeout The timeout.
+     * @param array   $env     The environment to be passed.
+     * @return void
      */
-    protected function runQueueFetching($command, $cwd = null, $timeout = null,
-            $env = []) {
-        $process = new \Symfony\Component\Process\Process($command,
-                isset($cwd) ? $cwd : getcwd(), $env, null, $timeout);
+    protected function runQueueFetching(
+        $command,
+        $cwd = null,
+        $timeout = null,
+        array $env = []
+    ) {
+        $process = new \Symfony\Component\Process\Process(
+            $command,
+            isset($cwd) ? $cwd : getcwd(),
+            $env,
+            null,
+            $timeout
+        );
         $process->setTimeout($timeout);
         $process->setIdleTimeout(null);
         $process->run();
@@ -123,18 +132,20 @@ class Controller extends \yii\console\Controller {
 
     /**
      * Initialize signal handler for the process.
+     * @return void
      */
-    protected function initSignalHandler() {
+    protected function initSignalHandler()
+    {
         $signalHandler = function ($signal) {
             switch ($signal) {
                 case SIGTERM:
-                    $this->stderr("Caught SIGTERM");
+                    $this->stderr('Caught SIGTERM');
                     exit;
                 case SIGKILL:
-                    $this->stderr("Caught SIGKILL");
+                    $this->stderr('Caught SIGKILL');
                     exit;
                 case SIGINT:
-                    $this->stderr("Caught SIGINT");
+                    $this->stderr('Caught SIGINT');
                     exit;
             }
         };
@@ -144,13 +155,14 @@ class Controller extends \yii\console\Controller {
 
     /**
      * Fetch a job from the queue.
+     * @return void
      */
-    public function actionRun() {
-        $queue = $this->getQueue();
-        $job = $queue->fetch();
+    public function actionRun()
+    {
+        $job = $this->queue->fetch();
         if ($job !== false) {
             $this->stdout("Running job #: {$job->id}" . PHP_EOL);
-            $queue->run($job);
+            $this->queue->run($job);
         } else {
             $this->stdout("No job\n");
         }
@@ -158,31 +170,39 @@ class Controller extends \yii\console\Controller {
 
     /**
      * Post a job to the queue.
-     * @param string $route the route.
-     * @param string $data the data in JSON format.
+     * @param string $route The route.
+     * @param string $data  The data in JSON format.
+     * @return void
      */
-    public function actionPost($route, $data = '{}') {
+    public function actionPost($route, $data = '{}')
+    {
         $this->stdout("Posting job to queue...\n");
         $job = $this->createJob($route, $data);
-        $this->getQueue()->post($job);
+        $this->queue->post($job);
     }
 
     /**
      * Run a task without going to queue.
-     * 
+     *
      * This is useful to test the task controller.
-     * 
-     * @param string $route the route.
-     * @param string $data the data in JSON format.
+     *
+     * @param string $route The route.
+     * @param string $data  The data in JSON format.
+     * @return void
      */
-    public function actionRunTask($route, $data = '{}') {
-        $this->stdout("Running task queue...");
+    public function actionRunTask($route, $data = '{}')
+    {
+        $this->stdout('Running task queue...');
         $job = $this->createJob($route, $data);
-        $this->getQueue()->run($job);
+        $this->queue->run($job);
     }
 
-    public function actionTest() {
-        $this->getQueue()->post(new Job([
+    /**
+     * @return void
+     */
+    public function actionTest()
+    {
+        $this->queue->post(new Job([
             'route' => 'test/test',
             'data' => ['halohalo' => 10, 'test2' => 100],
         ]));
@@ -190,12 +210,13 @@ class Controller extends \yii\console\Controller {
 
     /**
      * Create a job from route and data.
-     * 
-     * @param string $route the route.
-     * @param string $data the JSON data.
+     *
+     * @param string $route The route.
+     * @param string $data  The JSON data.
      * @return Job
      */
-    protected function createJob($route, $data = '{}') {
+    protected function createJob($route, $data = '{}')
+    {
         return new Job([
             'route' => $route,
             'data' => \yii\helpers\Json::decode($data),
@@ -204,14 +225,15 @@ class Controller extends \yii\console\Controller {
 
     /**
      * Peek messages from queue that are still active.
-     * 
-     * @param integer number of messages.
+     *
+     * @param integer $count Number of messages to peek.
+     * @return void
      */
-    public function actionPeek($count = 1) {
-        $this->stdout("Peeking queue...");
-        $queue = $this->getQueue();
+    public function actionPeek($count = 1)
+    {
+        $this->stdout('Peeking queue...');
         for ($i = 0; $i < $count; $i++) {
-            $job = $queue->fetch();
+            $job = $this->queue->fetch();
             if ($job !== false) {
                 $this->stdout("Peeking job #: {$job->id}" . PHP_EOL);
                 $this->stdout(\yii\helpers\Json::encode($job));
@@ -221,12 +243,14 @@ class Controller extends \yii\console\Controller {
 
     /**
      * Purging messages from queue that are still active.
-     * 
-     * @param integer number of messages.
+     *
+     * @param integer $count Number of messages to delete.
+     * @return void
      */
-    public function actionPurge($count = 1) {
-        $this->stdout("Purging queue...");
-        $queue = $this->getQueue();
+    public function actionPurge($count = 1)
+    {
+        $this->stdout('Purging queue...');
+        $queue = $this->queue;
         for ($i = 0; $i < $count; $i++) {
             $job = $queue->fetch();
             if ($job !== false) {
@@ -238,10 +262,11 @@ class Controller extends \yii\console\Controller {
 
     /**
      * Sets the name of the command. This should be overriden in the config.
-     * @param string $value the value.
+     * @param string $value The value.
+     * @return void
      */
-    public function setName($value) {
+    public function setName($value)
+    {
         $this->_name = $value;
     }
-
 }

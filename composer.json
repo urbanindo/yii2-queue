@@ -18,7 +18,12 @@
     },
     "require-dev": {
         "phpunit/phpunit": "4.6.*",
-        "phpunit/dbunit": ">=1.2"
+        "phpunit/dbunit": ">=1.2",
+        "phpunit/php-code-coverage": "2.2.4",
+        "fzaninotto/faker": "dev-master",
+        "flow/jsonpath": "dev-master",
+        "yiisoft/yii2-coding-standards": "*",
+        "squizlabs/php_codesniffer": "2.*"
     },
     "autoload": {
         "psr-4": {
