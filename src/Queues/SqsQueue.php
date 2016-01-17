@@ -88,7 +88,7 @@ class SqsQueue extends Queue
      * @param Job $job The job posted to the queue.
      * @return boolean whether operation succeed.
      */
-    public function postJob(Job &$job)
+    public function postJob(Job $job)
     {
         $model = $this->_client->sendMessage([
             'QueueUrl' => $this->url,
@@ -115,6 +115,27 @@ class SqsQueue extends Queue
             $response = $this->_client->deleteMessage([
                 'QueueUrl' => $this->url,
                 'ReceiptHandle' => $receiptHandle,
+            ]);
+            return $response !== null;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Release the job.
+     *
+     * @param Job $job The job to release.
+     * @return boolean whether the operation succeed.
+     */
+    public function releaseJob(Job $job)
+    {
+        if (!empty($job->header['ReceiptHandle'])) {
+            $receiptHandle = $job->header['ReceiptHandle'];
+            $response = $this->_client->changeMessageVisibility([
+                'QueueUrl' => $this->url,
+                'ReceiptHandle' => $receiptHandle,
+                'VisibilityTimeout' => 0,
             ]);
             return $response !== null;
         } else {

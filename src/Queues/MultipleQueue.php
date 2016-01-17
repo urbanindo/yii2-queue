@@ -9,6 +9,7 @@
 namespace UrbanIndo\Yii2\Queue\Queues;
 
 use UrbanIndo\Yii2\Queue\Job;
+use UrbanIndo\Yii2\Queue\Queue;
 use UrbanIndo\Yii2\Queue\Strategies\Strategy;
 use UrbanIndo\Yii2\Queue\Strategies\RandomStrategy;
 
@@ -18,7 +19,7 @@ use UrbanIndo\Yii2\Queue\Strategies\RandomStrategy;
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.25
  */
-class MultipleQueue extends \UrbanIndo\Yii2\Queue\Queue
+class MultipleQueue extends Queue
 {
 
     /**
@@ -90,7 +91,7 @@ class MultipleQueue extends \UrbanIndo\Yii2\Queue\Queue
      * @param Job $job The job.
      * @return boolean Whether operation succeed.
      */
-    protected function postJob(Job &$job)
+    protected function postJob(Job $job)
     {
         return $this->postToQueue($job, 0);
     }
@@ -109,4 +110,18 @@ class MultipleQueue extends \UrbanIndo\Yii2\Queue\Queue
         }
         return $queue->post($job);
     }
+
+    /**
+     * Release the job.
+     *
+     * @param Job $job The job to release.
+     * @return boolean whether the operation succeed.
+     */
+    protected function releaseJob(Job $job)
+    {
+        $index = $job->header[self::HEADER_MULTIPLE_QUEUE_INDEX];
+        $queue = $this->getQueue($index);
+        $queue->release($job);
+    }
+
 }

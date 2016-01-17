@@ -59,6 +59,16 @@ abstract class Queue extends \yii\base\Component
     const EVENT_AFTER_DELETE = 'afterDelete';
     
     /**
+     * Event executed before a job is being released from the queue.
+     */
+    const EVENT_BEFORE_RELEASE = 'beforeRelease';
+
+    /**
+     * Event executed after a job is being released from the queue.
+     */
+    const EVENT_AFTER_RELEASE = 'afterRelease';
+    
+    /**
      * Event executed before a job is being executed.
      */
     const EVENT_BEFORE_RUN = 'beforeRun';
@@ -137,7 +147,7 @@ abstract class Queue extends \yii\base\Component
      * @param Job $job The job.
      * @return boolean Whether operation succeed.
      */
-    abstract protected function postJob(Job &$job);
+    abstract protected function postJob(Job $job);
 
     /**
      * Return next job from the queue. This will trigger event EVENT_BEFORE_FETCH
@@ -208,6 +218,9 @@ abstract class Queue extends \yii\base\Component
         if ($retval !== false) {
             \Yii::info('Deleting job', 'yii2queue');
             $this->delete($job);
+//        } else {
+//            \Yii::info('Releasing job', 'yii2queue');
+//            $this->release($job);
         }
     }
 
@@ -241,6 +254,37 @@ abstract class Queue extends \yii\base\Component
      * @return boolean whether the operation succeed.
      */
     abstract protected function deleteJob(Job $job);
+    
+    /**
+     * Release the job. This will trigger event EVENT_BEFORE_RELEASE and
+     * EVENT_AFTER_RELEASE.
+     *
+     * @param Job $job The job to delete.
+     * @return boolean whether the operation succeed.
+     */
+    public function release(Job $job)
+    {
+        $this->trigger(self::EVENT_BEFORE_RELEASE, $beforeEvent = new Event(['job' => $job]));
+        if (!$beforeEvent->isValid) {
+            return false;
+        }
+        
+        $return = $this->releaseJob($job);
+        if (!$return) {
+            return false;
+        }
+        
+        $this->trigger(self::EVENT_AFTER_RELEASE, new Event(['job' => $job]));
+        return true;
+    }
+    
+    /**
+     * Release the job. Override this for the queue implementation.
+     *
+     * @param Job $job The job to release.
+     * @return boolean whether the operation succeed.
+     */
+    abstract protected function releaseJob(Job $job);
 
     /**
      * Deserialize job to be executed.

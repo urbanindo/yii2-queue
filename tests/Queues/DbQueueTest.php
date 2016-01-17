@@ -28,6 +28,9 @@ class DbQueueTest extends TestCase
             ]
         ]);
         
+        if (in_array($tableName, Yii::$app->db->getSchema()->getTableNames())) {
+            Yii::$app->db->createCommand()->dropTable($tableName)->execute();
+        }
         Yii::$app->db->createCommand()
              ->createTable($tableName, [
                 'id' => 'BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT',

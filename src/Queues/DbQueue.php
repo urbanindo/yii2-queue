@@ -156,7 +156,7 @@ class DbQueue extends \UrbanIndo\Yii2\Queue\Queue
      * @param Job $job The job to post.
      * @return boolean whether operation succeed.
      */
-    protected function postJob(Job &$job)
+    protected function postJob(Job $job)
     {
         return $this->db->createCommand()->insert($this->tableName, [
             'timestamp' => new \yii\db\Expression('NOW()'),
@@ -191,7 +191,7 @@ class DbQueue extends \UrbanIndo\Yii2\Queue\Queue
      * @param Job $job The job to restore.
      * @return boolean whether the operation succeed.
      */
-    public function restoreJob(Job $job)
+    public function releaseJob(Job $job)
     {
         return $this->db->createCommand()->update(
             $this->tableName,

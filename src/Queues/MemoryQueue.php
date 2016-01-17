@@ -58,7 +58,7 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue
      * @param Job $job The job to be posted to the queueu.
      * @return boolean Whether the post succeed.
      */
-    public function postJob(Job &$job)
+    public function postJob(Job $job)
     {
         $job->id = mt_rand(0, 65535);
         $this->_jobs[] = $job;
@@ -91,4 +91,17 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue
     {
         return $this->_jobs;
     }
+
+    /**
+     * Release the job.
+     *
+     * @param Job $job The job to release.
+     * @return boolean whether the operation succeed.
+     */
+    protected function releaseJob(Job $job)
+    {
+        $this->_jobs[] = $job;
+        return true;
+    }
+
 }
