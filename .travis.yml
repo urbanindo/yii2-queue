@@ -8,6 +8,12 @@ php:
 services:
   - mysql
   - redis-server
+  
+before_script:
+  #MySQL database init
+  - mysql -uroot -e "CREATE DATABASE IF NOT EXISTS test;"
+  - mysql -uroot -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'test';"
+  - mysql -uroot -e "GRANT ALL PRIVILEGES ON test.* TO 'test'@'localhost' IDENTIFIED BY 'test';"
 
 install:
   - travis_retry composer self-update && composer --version

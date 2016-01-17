@@ -6,17 +6,32 @@
  * @since 2016.01.16
  */
 
-namespace UrbanIndo\Yii2\Queue;
+namespace UrbanIndo\Yii2\Queue\Queues;
 
 use UrbanIndo\Yii2\Queue\Job;
 
 /**
  * DbQueue provides Yii2 database storing for Queue.
  *
+ * The schema of the table should follow:
+ *
+ * CREATE TABLE queue (
+ *     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT
+ *     status TINYINT NOT NULL DEFAULT 0
+ *     timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+ *     data BLOB
+ * );
+ *
+ * The queue works under the asumption that the `id` fields is AUTO_INCREMENT and
+ * the `timestamp` will be set using current timestamp.
+ *
+ * For other implementation, override the `fetchLatestRow` method and `postJob`
+ * method.
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2016.01.16
  */
-class DbQueue extends Queue
+class DbQueue extends \UrbanIndo\Yii2\Queue\Queue
 {
     /**
      * Status when the job is ready.
@@ -44,14 +59,14 @@ class DbQueue extends Queue
     /**
      * The name of the table to store the queue.
      *
-     * The table should be pre-created as follows:
+     * The table should be pre-created as follows for MySQL:
      *
      * ```php
      * CREATE TABLE queue (
      *     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT
      *     status TINYINT NOT NULL DEFAULT 0
      *     timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-     *     data BLOB
+     *     data LONGBLOB
      * );
      * ```
      * @var string
@@ -72,19 +87,6 @@ class DbQueue extends Queue
     {
         parent::init();
         $this->db = \yii\di\Instance::ensure($this->db, \yii\db\Connection::className());
-    }
-    
-    /**
-     * Creates the table if needed.
-     * @return boolean
-     */
-    public function createTable()
-    {
-        return $this->db->createCommand()->createTable($this->tableName, [
-            'id' => 'BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT',
-            'timestamp' => 'DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP',
-            'data' => 'LONGBLOB'
-        ])->execute();
     }
     
     /**
@@ -111,9 +113,13 @@ class DbQueue extends Queue
     
     /**
      * Fetch latest ready job from the table.
+     *
+     * Due to the use of AUTO_INCREMENT ID, this will fetch the job with the
+     * largest ID.
+     *
      * @return array
      */
-    private function fetchLatestRow()
+    protected function fetchLatestRow()
     {
         return (new \yii\db\Query())
                     ->select('*')
@@ -130,7 +136,7 @@ class DbQueue extends Queue
      * @param array $row The row to update.
      * @return boolean Whether successful or not.
      */
-    private function flagRunningRow(array $row)
+    protected function flagRunningRow(array $row)
     {
         $updated = $this->db->createCommand()
                 ->update(
@@ -153,8 +159,9 @@ class DbQueue extends Queue
     protected function postJob(Job &$job)
     {
         return $this->db->createCommand()->insert($this->tableName, [
+            'timestamp' => new \yii\db\Expression('NOW()'),
             'data' => $this->serialize($job),
-        ]) == 1;
+        ])->execute() == 1;
     }
 
     /**
@@ -174,7 +181,22 @@ class DbQueue extends Queue
                 $this->tableName,
                 ['status' => self::STATUS_DELETED],
                 ['id' => $job->id]
-            );
+            )->execute() == 1;
         }
+    }
+    
+    /**
+     * Restore job from active to ready.
+     *
+     * @param Job $job The job to restore.
+     * @return boolean whether the operation succeed.
+     */
+    public function restoreJob(Job $job)
+    {
+        return $this->db->createCommand()->update(
+            $this->tableName,
+            ['status' => self::STATUS_READY],
+            ['id' => $job->id]
+        )->execute() == 1;
     }
 }

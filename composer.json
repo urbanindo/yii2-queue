@@ -23,6 +23,8 @@
         "fzaninotto/faker": "dev-master",
         "flow/jsonpath": "dev-master",
         "yiisoft/yii2-coding-standards": "*",
+        "yiisoft/yii2-redis": "*",
+        "videlalvaro/php-amqplib": "2.5.*",
         "squizlabs/php_codesniffer": "2.*"
     },
     "autoload": {

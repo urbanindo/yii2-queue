@@ -175,7 +175,7 @@ abstract class Queue extends \yii\base\Component
     {
         $this->trigger(self::EVENT_BEFORE_RUN, $beforeEvent = new Event(['job' => $job]));
         if (!$beforeEvent->isValid) {
-            return false;
+            return;
         }
         \Yii::info('Running job', 'yii2queue');
         try {
