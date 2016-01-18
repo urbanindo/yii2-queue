@@ -199,4 +199,26 @@ class DbQueue extends \UrbanIndo\Yii2\Queue\Queue
             ['id' => $job->id]
         )->execute() == 1;
     }
+    
+    /**
+     * Returns the number of queue size.
+     * @return integer
+     */
+    public function getSize()
+    {
+        return (new \yii\db\Query())
+                    ->select('*')
+                    ->from($this->tableName)
+                    ->where(['status' => self::STATUS_READY])
+                    ->count('*', $this->db); 
+    }
+    
+    /**
+     * Purge the whole queue.
+     * @return boolean
+     */
+    public function purge()
+    {
+        return false;
+    }
 }

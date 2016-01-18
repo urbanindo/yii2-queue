@@ -121,7 +121,29 @@ class MultipleQueue extends Queue
     {
         $index = $job->header[self::HEADER_MULTIPLE_QUEUE_INDEX];
         $queue = $this->getQueue($index);
-        $queue->release($job);
+        return $queue->release($job);
     }
-
+    
+    /**
+     * Returns the total number of all queue size.
+     * @return integer
+     */
+    public function getSize()
+    {
+        return array_sum(array_map(function (Queue $queue) {
+            return $queue->getSize();
+        }, $this->queues));
+    }
+    
+    /**
+     * Purge the whole queue.
+     * @return boolean
+     */
+    public function purge()
+    {
+        foreach ($this->queues as $queue) {
+            $queue->purge();
+        }
+        return true;
+    }
 }

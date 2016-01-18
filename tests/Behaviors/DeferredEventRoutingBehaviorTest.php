@@ -6,25 +6,25 @@ class DeferredEventRoutingBehaviorTest extends PHPUnit_Framework_TestCase {
         
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $model = new DeferredEventRoutingBehaviorTestModel();
         $model->trigger('eventTest');
-        $this->assertEquals(1, $queue->getQueueLength());
+        $this->assertEquals(1, $queue->getSize());
         $model->id = 5;
         $job = $queue->fetch();
         $this->assertEquals('test/index', $job->route);
         $this->assertFalse($job->isCallable());
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $this->assertEquals([
             'id' => 1,
             'test' => 2,
         ], $job->data);
         $model->trigger('eventTest2');
-        $this->assertEquals(1, $queue->getQueueLength());
+        $this->assertEquals(1, $queue->getSize());
         $job = $queue->fetch();
         $this->assertEquals('test/halo', $job->route);
         $this->assertFalse($job->isCallable());
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $this->assertEquals([
             'halo' => 5
         ], $job->data);

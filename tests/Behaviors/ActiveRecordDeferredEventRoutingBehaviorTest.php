@@ -7,34 +7,34 @@ class ActiveRecordDeferredEventRoutingBehaviorTest extends PHPUnit_Framework_Tes
             'id' => 'pk',
             'name' => 'string',
         ])->execute();
-        Yii::$app->queue->emptyQueue();
+        Yii::$app->queue->purge();
     }
     
     public function testEventRouting() {
         
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $model = new DeferredEventRoutingBehaviorTestActiveRecord();
         $model->id = 5;
         $model->save(false);
         $model->trigger('eventTest');
-        $this->assertEquals(1, $queue->getQueueLength());
+        $this->assertEquals(1, $queue->getSize());
         
         $job = $queue->fetch();
         $this->assertEquals('test/index', $job->route);
         $this->assertFalse($job->isCallable());
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $this->assertEquals([
             'id' => 5,
             'scenario' => 'default',
         ], $job->data);
         $model->trigger('eventTest2');
-        $this->assertEquals(1, $queue->getQueueLength());
+        $this->assertEquals(1, $queue->getSize());
         $job = $queue->fetch();
         $this->assertEquals('test/halo', $job->route);
         $this->assertFalse($job->isCallable());
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $this->assertEquals([
             'halo' => 5,
             'scenario' => 'default',

@@ -47,7 +47,7 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue
      */
     public function fetchJob()
     {
-        if ($this->getQueueLength() == 0) {
+        if ($this->getSize() == 0) {
             return false;
         }
         $job = array_pop($this->_jobs);
@@ -63,24 +63,6 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue
         $job->id = mt_rand(0, 65535);
         $this->_jobs[] = $job;
         return true;
-    }
-    
-    /**
-     * Returns the number of job.
-     * @return integer
-     */
-    public function getQueueLength()
-    {
-        return count($this->_jobs);
-    }
-
-    /**
-     * Empty the whole queue items.
-     * @return void
-     */
-    public function emptyQueue()
-    {
-        $this->_jobs = [];
     }
     
     /**
@@ -101,6 +83,25 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue
     protected function releaseJob(Job $job)
     {
         $this->_jobs[] = $job;
+        return true;
+    }
+
+    /**
+     * Returns the number of queue size.
+     * @return integer
+     */
+    public function getSize()
+    {
+        return count($this->_jobs);
+    }
+    
+    /**
+     * Purge the whole queue.
+     * @return boolean
+     */
+    public function purge()
+    {
+        $this->_jobs = [];
         return true;
     }
 

@@ -33,6 +33,13 @@ class SqsQueue extends Queue
      * @var array
      */
     public $config = [];
+    
+    /**
+     * Due to ability of the queue message to be visible automatically after
+     * a certain of time, this is not required.
+     * @var boolean
+     */
+    public $releaseOnFailure = false;
 
     /**
      * Stores the SQS client.
@@ -152,4 +159,33 @@ class SqsQueue extends Queue
     {
         return $this->_client;
     }
+
+    /**
+     * Returns the number of queue size.
+     * @return integer
+     */
+    public function getSize()
+    {
+        $response = $this->getClient()->getQueueAttributes([
+            'QueueUrl' => $this->url,
+            'AttributeNames' => [
+                'ApproximateNumberOfMessages'
+            ]
+        ]);
+        $attributes = $response->get('Attributes');
+        return \yii\helpers\ArrayHelper::getValue($attributes, 'ApproximateNumberOfMessages', 0);
+    }
+
+    /**
+     * Purge the whole queue.
+     * @return boolean
+     */
+    public function purge()
+    {
+        $response = $this->getClient()->getQueueAttributes([
+            'QueueUrl' => $this->url,
+        ]);
+        return $response !== null;
+    }
+
 }

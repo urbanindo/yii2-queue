@@ -25,6 +25,9 @@ or add
 
 to the require section of your `composer.json` file.
 
+To use Redis queue or RabbitMQ, you have to add `yiisoft/yii2-redis:*` or 
+`videlalvaro/php-amqplib: 2.5.*` respectively.
+
 ## Setting Up
 
 After the installation, first step is to set the console controller.
@@ -54,7 +57,7 @@ the task in the component. For example, queue using AWS SQS
 ```php
 'components' => [
     'queue' => [
-        'class' => 'UrbanIndo\Yii2\Queue\SqsQueue',
+        'class' => 'UrbanIndo\Yii2\Queue\Queues\SqsQueue',
         'module' => 'task',
         'url' => 'https://sqs.ap-southeast-1.amazonaws.com/123456789012/queue',
             'config' => [
@@ -62,6 +65,22 @@ the task in the component. For example, queue using AWS SQS
                 'secret' => '1234567890123456789012345678901234567890',
             'region' => 'ap-southeast-1',
         ],
+    ]
+]
+```
+
+Or using Database queue
+
+```php
+'components' => [
+    'db' => [
+        //the db component
+    ],
+    'queue' => [
+        'class' => 'UrbanIndo\Yii2\Queue\Queues\DbQueue',
+        'db' => 'db',
+        'tableName' => 'queue',
+        'module' => 'task',
     ]
 ]
 ```
@@ -236,5 +255,5 @@ To run the tests, in the root directory execute below.
 
 ## Road Map
 
-- Add more queue provider such as MySQL, Redis, MemCache, IronMQ, RabbitMQ.
+- Add more queue provider such as Redis, MemCache, IronMQ, RabbitMQ.
 - Add priority queue.

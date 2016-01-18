@@ -107,6 +107,13 @@ abstract class Queue extends \yii\base\Component
      * @var string
      */
     public $serializer = 'json';
+    
+    /**
+     * This will release automatically on execution failure. i.e. when
+     * the `run` method returns false or catch exception.
+     * @var boolean
+     */
+    public $releaseOnFailure = true;
 
     /**
      * Initializes the module.
@@ -205,6 +212,9 @@ abstract class Queue extends \yii\base\Component
                 $id = $job->route;
             }
             \Yii::error("Fatal Error: Error running route '{$id}'. Message: {$e->getMessage()}", 'yii2queue');
+            if ($this->releaseOnFailure) {
+                $this->release($job);
+            }
             throw new \yii\base\Exception(
                 "Error running route '{$id}'. " .
                 "Message: {$e->getMessage()}. " .
@@ -218,9 +228,8 @@ abstract class Queue extends \yii\base\Component
         if ($retval !== false) {
             \Yii::info('Deleting job', 'yii2queue');
             $this->delete($job);
-//        } else {
-//            \Yii::info('Releasing job', 'yii2queue');
-//            $this->release($job);
+        } else if ($this->releaseOnFailure) {
+            $this->release($job);
         }
     }
 
@@ -377,4 +386,16 @@ abstract class Queue extends \yii\base\Component
         }
         return $data;
     }
+    
+    /**
+     * Returns the number of queue size.
+     * @return integer
+     */
+    abstract public function getSize();
+    
+    /**
+     * Purge the whole queue.
+     * @return boolean
+     */
+    abstract public function purge();
 }

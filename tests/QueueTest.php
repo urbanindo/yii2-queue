@@ -14,9 +14,9 @@ class QueueTest extends PHPUnit_Framework_TestCase {
                 throw new \Exception('Test');
              }
          ]));
-         $this->assertEquals(1, $queue->getQueueLength());
+         $this->assertEquals(1, $queue->getSize());
          $job = $queue->fetch();
-         $this->assertEquals(0, $queue->getQueueLength());
+         $this->assertEquals(0, $queue->getSize());
          $queue->run($job);
     }
 }
