@@ -9,6 +9,8 @@ services:
   - mysql
   - redis-server
   
+script: ./vendor/bin/phpunit
+  
 before_script:
   #MySQL database init
   - mysql -uroot -e "CREATE DATABASE IF NOT EXISTS test;"
