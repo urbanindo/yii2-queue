@@ -6,7 +6,7 @@
  * @since 2015.02.24
  */
 
-namespace UrbanIndo\Yii2\Queue;
+namespace UrbanIndo\Yii2\Queue\Queues;
 
 use \Aws\Sqs\SqsClient;
 use UrbanIndo\Yii2\Queue\Job;
@@ -17,7 +17,7 @@ use UrbanIndo\Yii2\Queue\Job;
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.24
  */
-class SqsQueue extends Queue
+class SqsQueue extends \UrbanIndo\Yii2\Queue\Queue
 {
 
     /**
@@ -33,7 +33,7 @@ class SqsQueue extends Queue
      * @var array
      */
     public $config = [];
-    
+
     /**
      * Due to ability of the queue message to be visible automatically after
      * a certain of time, this is not required.
@@ -128,7 +128,7 @@ class SqsQueue extends Queue
             return false;
         }
     }
-    
+
     /**
      * Release the job.
      *

@@ -25,7 +25,7 @@ or add
 
 to the require section of your `composer.json` file.
 
-To use Redis queue or RabbitMQ, you have to add `yiisoft/yii2-redis:*` or 
+To use Redis queue or RabbitMQ, you have to add `yiisoft/yii2-redis:*` or
 `videlalvaro/php-amqplib: 2.5.*` respectively.
 
 ## Setting Up
@@ -96,7 +96,7 @@ e.g.
 
 ```php
 class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
-    
+
     public function actionBar($param1, $param2){
         echo $param1;
     }
@@ -111,7 +111,7 @@ e.g.
 
 ```php
 class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
-    
+
     public function actionBar($param1, $param2){
         try {
         } catch (\Exception $ex){
@@ -171,7 +171,7 @@ To use this, add behavior in a component and implement the defined event handler
             [
                 'class' => \UrbanIndo\Yii2\Queue\Behaviors\DeferredEventBehavior::class,
                 'events' => [
-                    self::EVENT_AFTER_VALIDATE => 'deferAfterValidate', 
+                    self::EVENT_AFTER_VALIDATE => 'deferAfterValidate',
                 ]
             ]
         ]);
@@ -201,7 +201,7 @@ object whose attributes are assigned from the attributes of the original object.
 
 ### Web End Point
 
-We can use web endpoint to use the queue by adding `\UrbanIndo\Yii2\Queue\Web\Controller` 
+We can use web endpoint to use the queue by adding `\UrbanIndo\Yii2\Queue\Web\Controller`
 to the controller map.
 
 For example
@@ -255,5 +255,4 @@ To run the tests, in the root directory execute below.
 
 ## Road Map
 
-- Add more queue provider such as Redis, MemCache, IronMQ, RabbitMQ.
-- Add priority queue.
+- Add more queue provider such as MemCache, IronMQ, RabbitMQ.
