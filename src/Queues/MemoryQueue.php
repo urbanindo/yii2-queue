@@ -1,23 +1,25 @@
 <?php
 /**
  * MemoryQueue class file.
- * 
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.06.01
  */
+
 namespace UrbanIndo\Yii2\Queue\Queues;
 
 use UrbanIndo\Yii2\Queue\Job;
 
 /**
  * MemoryQueue stores queue in the local variable.
- * 
+ *
  * This will only work for one request.
- * 
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.06.01
  */
-class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
+class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue
+{
     
     /**
      * @var Job[]
@@ -25,11 +27,12 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
     private $_jobs = [];
 
     /**
-     * @param Job $job
-     * @return boolean
+     * @param Job $job The job to delete.
+     * @return boolean Whether the deletion succeed.
      */
-    public function delete(Job $job) {
-        foreach($this->_jobs as $key => $val) {
+    public function deleteJob(Job $job)
+    {
+        foreach ($this->_jobs as $key => $val) {
             if ($val->id == $job->id) {
                 unset($this->_jobs[$key]);
                 $this->_jobs = array_values($this->_jobs);
@@ -40,10 +43,11 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
     }
 
     /**
-     * @return Job
+     * @return Job The job fetched from queue.
      */
-    public function fetch() {
-        if ($this->getQueueLength() == 0) {
+    public function fetchJob()
+    {
+        if ($this->getSize() == 0) {
             return false;
         }
         $job = array_pop($this->_jobs);
@@ -51,33 +55,54 @@ class MemoryQueue extends \UrbanIndo\Yii2\Queue\Queue {
     }
 
     /**
-     * @param Job $job
+     * @param Job $job The job to be posted to the queueu.
+     * @return boolean Whether the post succeed.
      */
-    public function post(Job &$job) {
+    public function postJob(Job $job)
+    {
         $job->id = mt_rand(0, 65535);
         $this->_jobs[] = $job;
         return true;
     }
     
     /**
-     * Returns the number of job.
-     * @return integer
+     * Returns the jobs posted to the queue.
+     * @return Job[]
      */
-    public function getQueueLength() {
-        return count($this->_jobs);
+    public function getJobs()
+    {
+        return $this->_jobs;
     }
 
     /**
-     * 
+     * Release the job.
+     *
+     * @param Job $job The job to release.
+     * @return boolean whether the operation succeed.
      */
-    public function emptyQueue() {
-        $this->_jobs = [];
+    protected function releaseJob(Job $job)
+    {
+        $this->_jobs[] = $job;
+        return true;
+    }
+
+    /**
+     * Returns the number of queue size.
+     * @return integer
+     */
+    public function getSize()
+    {
+        return count($this->_jobs);
     }
     
     /**
-     * @return Job[]
+     * Purge the whole queue.
+     * @return boolean
      */
-    public function getJobs() {
-        return $this->_jobs;
+    public function purge()
+    {
+        $this->_jobs = [];
+        return true;
     }
+
 }

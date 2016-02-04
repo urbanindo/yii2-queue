@@ -1,5 +1,4 @@
 <?php
-
 /**
  * DeferredEventRoutingBehavior extends
  * @author Petra Barus <petra.barus@gmail.com>
@@ -8,39 +7,40 @@
 
 namespace UrbanIndo\Yii2\Queue\Behaviors;
 
-use Yii;
 use yii\db\ActiveRecord;
+use UrbanIndo\Yii2\Queue\Queue;
 
 /**
  * DeferredEventRoutingBehavior provides matching between controller in
  * task worker with the appropriate event.
- *  
+ *
  * @property-read ActiveRecord $owner the owner.
- * 
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.25
  */
-class DeferredEventRoutingBehavior extends \yii\base\Behavior {
+class DeferredEventRoutingBehavior extends \yii\base\Behavior
+{
     
     /**
      * The queue that post the deferred event.
-     * @var \UrbanIndo\Yii2\Queue\Queue
+     * @var string|array|Queue
      */
     public $queue = 'queue';
 
     /**
      * List events that handler and the appropriate routing. The routing can be
      * generated via callable or array.
-     * 
+     *
      * e.g.
-     * 
+     *
      * [
-     *         self::EVENT_AFTER_SAVE => ['test/index'], 
+     *         self::EVENT_AFTER_SAVE => ['test/index'],
      *         self::EVENT_AFTER_VALIDATE => ['test/index']
      * ]
-     * 
+     *
      * or
-     * 
+     *
      * [
      *         self::EVENT_AFTER_SAVE => function($model) {
      *              return ['test/index', 'id' => $model->id];
@@ -48,35 +48,38 @@ class DeferredEventRoutingBehavior extends \yii\base\Behavior {
      *         self::EVENT_AFTER_VALIDATE => function($model) {
      *              return ['test/index', 'id' => $model->id];
      *         }
-     * ] 
-     * 
-     * @var type 
+     * ]
+     *
+     * @var array
      */
     public $events = [];
     
     /**
      * Initialize the queue.
-     * @throws \Exception
+     * @return void
      */
-    public function init() {
+    public function init()
+    {
         parent::init();
-        $queueName = $this->queue;
-        $this->queue = Yii::$app->get($queueName);
-        if (!$this->queue instanceof \UrbanIndo\Yii2\Queue\Queue) {
-            throw new \Exception("Can not found queue component named '{$queueName}'");
-        }
+        $this->queue = \yii\di\Instance::ensure($this->queue, Queue::className());
     }
     
     /**
      * Declares event handlers for the [[owner]]'s events.
      * @return array
      */
-    public function events() {
+    public function events()
+    {
         parent::events();
         return array_fill_keys(array_keys($this->events), 'routeEvent');
     }
     
-    public function routeEvent($event) {
+    /**
+     * @param \yii\base\Event $event The event to handle.
+     * @return void
+     */
+    public function routeEvent(\yii\base\Event $event)
+    {
         $eventName = $event->name;
         $handler = $this->events[$eventName];
         if (is_callable($handler)) {

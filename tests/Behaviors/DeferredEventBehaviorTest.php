@@ -8,22 +8,22 @@ class DeferredEventBehaviorTest extends PHPUnit_Framework_TestCase  {
             'id' => 'pk',
             'name' => 'string',
         ])->execute();
-        Yii::$app->queue->emptyQueue();
+        Yii::$app->queue->purge();
     }
     
     public function testEventHandler() {
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         
         $model = new TestModel();
         $model->recordId = 1;
         $model->createRecord();
         $model->triggerEvent();
         
-        $this->assertEquals(1, $queue->getQueueLength());
+        $this->assertEquals(1, $queue->getSize());
         $job = $queue->fetch();
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $queue->run($job);
         
         $sameModel = DeferredEventBehaviorTestActiveRecord::findOne($model->recordId);

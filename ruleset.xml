@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="UrbanIndo">
+    <description>UrbanIndo Coding Standard</description>
+    
+    <exclude-pattern>*/tests/*</exclude-pattern>
+    <exclude-pattern>*/test/*</exclude-pattern>
+    <exclude-pattern>*/data/*</exclude-pattern>
+    <exclude-pattern>*/config/*</exclude-pattern>
+    <exclude-pattern>*/views/*</exclude-pattern>
+    <exclude-pattern>*/migrations/*</exclude-pattern>
+    <exclude-pattern>*/messages/id/*</exclude-pattern>
+
+    <rule ref="PSR2">
+        <!-- Property names MUST start with an initial underscore if they are private. -->
+        <exclude name="PSR2.Classes.PropertyDeclaration"/>
+
+        <!-- Opening parenthesis of a multi-line function call must be the last content on the line. -->
+        <!-- Closing parenthesis of a multi-line function call must be on a line by itself. -->
+        <!-- Only one argument is allowed per line in a multi-line function call. -->
+        <exclude name="PEAR.Functions.FunctionCallSignature"/>
+        <!-- CASE keyword must be indented 4 spaces from SWITCH keyword. -->
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration"/>
+        <!-- Use ELSE IF. -->
+        <exclude name="PSR2.ControlStructures.ElseIfDeclaration.NotAllowed"/>
+    </rule>
+    
+    <rule ref="Squiz.WhiteSpace.OperatorSpacing"/>
+    
+    <rule ref="Squiz.Commenting.FileComment">
+        <exclude name="Squiz.Commenting.FileComment.MissingSubpackageTag" />
+        <exclude name="Squiz.Commenting.FileComment.MissingPackageTag" />
+        <exclude name="Squiz.Commenting.FileComment.MissingCopyrightTag" />
+        <exclude name="Squiz.Commenting.FileComment.IncorrectAuthor" />
+        <exclude name="Squiz.Commenting.FileComment.IncorrectCopyright" />
+        <exclude name="Squiz.Commenting.FileComment.DuplicateAuthorTag" />
+        <exclude name="Squiz.Commenting.FileComment.PackageTagOrder"/>
+        <exclude name="Squiz.Commenting.FileComment.SubpackageTagOrder"/>
+        <exclude name="Squiz.Commenting.FileComment.AuthorTagOrder" />
+    </rule>
+
+    <rule ref="Squiz.Commenting.FunctionComment">
+        <!-- due to incompatibility between Yii2 class -->
+        <exclude name="Squiz.Commenting.FunctionComment.TypeHintMissing"/>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag" />
+    <rule ref="Squiz.Commenting.ClassComment">
+        <exclude name="Squiz.Commenting.ClassComment.TagNotAllowed"/>
+    </rule>
+    <rule ref="Squiz.Commenting.VariableComment"/>
+    <rule ref="Squiz.Strings.DoubleQuoteUsage">
+        <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar"/>
+    </rule>
+    <rule ref="Generic.CodeAnalysis">
+        <exclude name="Generic.CodeAnalysis.UselessOverridingMethod.Found"/>
+    </rule>
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+       <exclude-pattern>*/migrations/*</exclude-pattern>
+    </rule>
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+       <exclude-pattern>*/migrations/*</exclude-pattern>
+    </rule>
+    
+</ruleset>

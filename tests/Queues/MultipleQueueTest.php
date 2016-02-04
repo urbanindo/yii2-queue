@@ -4,7 +4,7 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
     
     public function test() {
         $queue = Yii::createObject([
-            'class' => '\UrbanIndo\Yii2\Queue\MultipleQueue',
+            'class' => '\UrbanIndo\Yii2\Queue\Queues\MultipleQueue',
             'queues' => [
                 [
                     'class' => '\UrbanIndo\Yii2\Queue\Queues\MemoryQueue'
@@ -24,7 +24,7 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
             ]
         ]);
         
-        $this->assertTrue($queue instanceof UrbanIndo\Yii2\Queue\MultipleQueue);
+        $this->assertTrue($queue instanceof UrbanIndo\Yii2\Queue\Queues\MultipleQueue);
         /* @var $queue UrbanIndo\Yii2\Queue\MultipleQueue */
         $this->assertCount(4, $queue->queues);
         foreach($queue->queues as $tqueue) {

@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 1.3.0
+- Added implementation for DbQueue and RedisQueue.
+- Added events for queue.
+- Added `purge` method for queue.
+- Refactoring code.
+
 ## 1.2.3
 - Passing scenario for model and active record.
 
@@ -25,7 +31,7 @@ All notable changes to this project will be documented in this file.
 ## 2015-02-25
 
 ### Changed
-- Shorten  `postJob`, `getJob`, `deleteJob`, `runJob` method name to `post`, 
+- Shorten  `postJob`, `getJob`, `deleteJob`, `runJob` method name to `post`,
   `fetch`, `delete`, `run`.
 
 ### Fixed

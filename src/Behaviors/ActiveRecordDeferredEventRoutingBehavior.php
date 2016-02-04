@@ -1,7 +1,7 @@
 <?php
-
 /**
  * ActiveRecordDeferredRoutingBehavior extends
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.25
  */
@@ -13,17 +13,18 @@ use yii\db\ActiveRecord;
 /**
  * ActiveRecordDeferredRoutingBehavior provides matching between controller in
  * task worker with the appropriate event.
- *  
+ *
  * @property-read ActiveRecord $owner the owner.
- * 
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.25
  */
-class ActiveRecordDeferredEventRoutingBehavior extends DeferredEventRoutingBehavior {
+class ActiveRecordDeferredEventRoutingBehavior extends DeferredEventRoutingBehavior
+{
     
     /**
      * The attribute name.
-     * @var type 
+     * @var string
      */
     public $pkAttribute = 'id';
     
@@ -33,7 +34,12 @@ class ActiveRecordDeferredEventRoutingBehavior extends DeferredEventRoutingBehav
      */
     public $addPkToData = true;
     
-    public function routeEvent($event) {
+    /**
+     * @param \yii\base\Event $event The event to handle.
+     * @return void
+     */
+    public function routeEvent(\yii\base\Event $event)
+    {
         /* @var $owner ActiveRecord */
         
         $eventName = $event->name;

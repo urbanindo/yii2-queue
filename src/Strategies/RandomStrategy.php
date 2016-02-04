@@ -1,23 +1,29 @@
 <?php
-
 /**
  * RandomStrategy class file.
- * 
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.25
  */
 
 namespace UrbanIndo\Yii2\Queue\Strategies;
 
+use UrbanIndo\Yii2\Queue\Job;
+
 /**
  * RandomStrategy provides random choosing of the queue for getting the job.
- * 
+ *
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.25
  */
-class RandomStrategy extends Strategy {
-    
-    public function init() {
+class RandomStrategy extends Strategy
+{
+
+    /**
+     * @return void
+     */
+    public function init()
+    {
         parent::init();
         srand();
     }
@@ -30,9 +36,10 @@ class RandomStrategy extends Strategy {
 
     /**
      * Returns the job.
-     * @return \UrbanIndo\Yii2\Queue\Job|boolean the job or false if not found.
+     * @return Job|boolean the job or false if not found.
      */
-    protected function getJobFromQueues() {
+    protected function getJobFromQueues()
+    {
         $attempt = 0;
         $count = count($this->_queue->queues);
         while ($attempt < $this->maxAttempt) {
@@ -46,5 +53,4 @@ class RandomStrategy extends Strategy {
         }
         return false;
     }
-
 }

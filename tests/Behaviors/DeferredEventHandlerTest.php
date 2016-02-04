@@ -7,13 +7,13 @@ class DeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
             'id' => 'pk',
             'name' => 'string',
         ])->execute();
-        Yii::$app->queue->emptyQueue();
+        Yii::$app->queue->purge();
     }
     
     public function testEventHandlerInSimpleComponent() {
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $component = new DeferredEventHandlerTestComponent();
         $component->recordId = 1;
         $component->triggerEvent();
@@ -22,9 +22,9 @@ class DeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
         $this->assertNotNull($model);
         $this->assertEquals('test', $model->name);
         
-        $this->assertEquals(1, $queue->getQueueLength());
+        $this->assertEquals(1, $queue->getSize());
         $job = $queue->fetch();
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $queue->run($job);
         
         $model->refresh();
@@ -34,7 +34,7 @@ class DeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
     public function testEventHandlerInSimpleModel() {
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $model = new DeferredEventHandlerTestModel();
         $model->recordId = 2;
         $model->triggerEvent();
@@ -43,9 +43,9 @@ class DeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
         $this->assertNotNull($model);
         $this->assertEquals('test', $model->name);
         
-        $this->assertEquals(1, $queue->getQueueLength());
+        $this->assertEquals(1, $queue->getSize());
         $job = $queue->fetch();
-        $this->assertEquals(0, $queue->getQueueLength());
+        $this->assertEquals(0, $queue->getSize());
         $queue->run($job);
         
         $model->refresh();
