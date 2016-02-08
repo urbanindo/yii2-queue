@@ -16,9 +16,9 @@ use UrbanIndo\Yii2\Queue\Job;
  * The schema of the table should follow:
  *
  * CREATE TABLE queue (
- *     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT
- *     status TINYINT NOT NULL DEFAULT 0
- *     timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+ *     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+ *     status TINYINT NOT NULL DEFAULT 0,
+ *     timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
  *     data BLOB
  * );
  *
@@ -63,9 +63,9 @@ class DbQueue extends \UrbanIndo\Yii2\Queue\Queue
      *
      * ```php
      * CREATE TABLE queue (
-     *     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT
-     *     status TINYINT NOT NULL DEFAULT 0
-     *     timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+     *     id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+     *     status TINYINT NOT NULL DEFAULT 0,
+     *     timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
      *     data LONGBLOB
      * );
      * ```

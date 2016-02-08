@@ -21,6 +21,10 @@ use UrbanIndo\Yii2\Queue\Strategies\RandomStrategy;
  */
 class MultipleQueue extends Queue
 {
+    /**
+     * Additional header for the job.
+     */
+    const HEADER_MULTIPLE_QUEUE_INDEX = 'MultipleQueueIndex';
 
     /**
      * Stores the queue.
