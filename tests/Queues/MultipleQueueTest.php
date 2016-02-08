@@ -52,7 +52,7 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
         } while ($fjob1 == false);
         $this->assertTrue($fjob1 instanceof \UrbanIndo\Yii2\Queue\Job);
         /* @var $fjob1 Job */
-        $index = $fjob1->header[\UrbanIndo\Yii2\Queue\Strategies\Strategy::HEADER_MULTIPLE_QUEUE_INDEX];
+        $index = $fjob1->header[\UrbanIndo\Yii2\Queue\Queues\MultipleQueue::HEADER_MULTIPLE_QUEUE_INDEX];
         $this->assertContains($index, range(0, 3));
         $fjob1->runCallable();
         $this->assertEquals(1, $i);
@@ -68,7 +68,7 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
             $fjob2 = $queue->fetch();
         } while ($fjob2 == false);
         $this->assertTrue($fjob2 instanceof \UrbanIndo\Yii2\Queue\Job);
-        $index2 = $fjob2->header[\UrbanIndo\Yii2\Queue\Strategies\Strategy::HEADER_MULTIPLE_QUEUE_INDEX];
+        $index2 = $fjob2->header[\UrbanIndo\Yii2\Queue\Queues\MultipleQueue::HEADER_MULTIPLE_QUEUE_INDEX];
         $this->assertEquals(3, $index2);
         $fjob2->runCallable();
         $this->assertEquals(2, $i);

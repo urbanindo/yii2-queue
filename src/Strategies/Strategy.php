@@ -21,11 +21,6 @@ abstract class Strategy extends \yii\base\Object
 {
 
     /**
-     * Additional header for the job.
-     */
-    const HEADER_MULTIPLE_QUEUE_INDEX = 'MultipleQueueIndex';
-
-    /**
      * Stores the queue.
      * @var \UrbanIndo\Yii2\Queue\MultipleQueue
      */
@@ -59,7 +54,7 @@ abstract class Strategy extends \yii\base\Object
         }
         list($job, $index) = $return;
         /* @var $job Job */
-        $job->header[self::HEADER_MULTIPLE_QUEUE_INDEX] = $index;
+        $job->header[MultipleQueue::HEADER_MULTIPLE_QUEUE_INDEX] = $index;
         return $job;
     }
 
@@ -73,7 +68,7 @@ abstract class Strategy extends \yii\base\Object
     {
         $index = \yii\helpers\ArrayHelper::getValue(
             $job->header,
-            self::HEADER_MULTIPLE_QUEUE_INDEX,
+            MultipleQueue::HEADER_MULTIPLE_QUEUE_INDEX,
             null
         );
         if (!isset($index)) {
