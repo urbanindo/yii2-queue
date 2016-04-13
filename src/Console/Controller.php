@@ -10,6 +10,7 @@ namespace UrbanIndo\Yii2\Queue\Console;
 
 use UrbanIndo\Yii2\Queue\Job;
 use UrbanIndo\Yii2\Queue\Queue;
+use yii\base\InvalidParamException;
 
 /**
  * QueueController handles console command for running the queue.
@@ -20,6 +21,18 @@ use UrbanIndo\Yii2\Queue\Queue;
  *    // ...
  *     'controllerMap' => [
  *         'queue' => 'UrbanIndo\Yii2\Queue\Console\QueueController'
+ *     ],
+ * ];
+ * 
+ * OR
+ * 
+ * return [
+ *    // ...
+ *     'controllerMap' => [
+ *         'queue' => [
+ *              'class' => 'UrbanIndo\Yii2\Queue\Console\QueueController',
+ *              'sleepTimeout' => 1
+ *          ]
  *     ],
  * ];
  *
@@ -37,6 +50,11 @@ class Controller extends \yii\console\Controller
      * @var string|array|Queue the name of the queue component. default to 'queue'.
      */
     public $queue = 'queue';
+    
+    /**
+     * @var integer sleep timeout for infinite loop in second
+     */
+    public $sleepTimeout = 0;
 
     /**
      * @var string the name of the command.
@@ -49,6 +67,15 @@ class Controller extends \yii\console\Controller
     public function init()
     {
         parent::init();
+        
+        if (!is_numeric($this->sleepTimeout)) {
+            throw new InvalidParamException('($sleepTimeout) must be an number');
+        }
+
+        if ($this->sleepTimeout < 0) {
+            throw new InvalidParamException('($sleepTimeout) must be greater or equal than 0');
+        }
+        
         $this->queue = \yii\di\Instance::ensure($this->queue, Queue::className());
     }
 
@@ -91,6 +118,9 @@ class Controller extends \yii\console\Controller
         while (true) {
             $this->stdout("Running new process...\n");
             $this->runQueueFetching($command, $cwd, $timeout, $env);
+            if ($this->sleepTimeout > 0) {
+                sleep($this->sleepTimeout);
+            }
         }
         $this->stdout("Exiting...\n");
     }
