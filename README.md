@@ -7,6 +7,9 @@ This provides queue component for Yii2.
 [![Latest Unstable Version](https://poser.pugx.org/urbanindo/yii2-queue/v/unstable.svg)](https://packagist.org/packages/urbanindo/yii2-queue)
 [![Build Status](https://travis-ci.org/urbanindo/yii2-queue.svg)](https://travis-ci.org/urbanindo/yii2-queue)
 
+## Requirements
+You need [PCNT extension](http://php.net/manual/en/book.pcntl.php) enabled to run listener
+
 ## Installation
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
