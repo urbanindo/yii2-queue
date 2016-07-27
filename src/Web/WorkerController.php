@@ -8,6 +8,8 @@
 
 namespace UrbanIndo\Yii2\Queue\Web;
 
+use UrbanIndo\Yii2\Queue\Job;
+use UrbanIndo\Yii2\Queue\Queue;
 use Yii;
 
 /**
@@ -53,27 +55,14 @@ class WorkerController extends \yii\web\Controller
     {
         $route = \Yii::$app->getRequest()->post('route');
         $data = \Yii::$app->getRequest()->post('data');
-        $start = time();
-        ob_start();
         $job = new \UrbanIndo\Yii2\Queue\Job([
             'route' => $route,
             'data' => \yii\helpers\Json::decode($data),
         ]);
-        $this->getQueue()->run($job);
-        $stdout = ob_get_clean();
-        $end = time();
-        return [
-            'jobId' => $job->id,
-            'route' => $job->isCallable() ? 'callable' : $job->route,
-            'data' => $job->data,
-            'status' => 'success',
-            'stdout' => $stdout,
-            'level' => 'info',
-            'time' => date('Y-m-d H:i:s', $start),
-            'duration' => $end - $start,
-        ];
+        $queue = $this->getQueue();
+        return $this->executeJob($queue, $job);
     }
-    
+
     /**
      * Run a task by request.
      * @return mixed
@@ -82,6 +71,16 @@ class WorkerController extends \yii\web\Controller
     {
         $queue = $this->getQueue();
         $job = $queue->fetch();
+        return $this->executeJob($queue, $job);
+    }
+
+    /**
+     * @param Queue $queue Queue the job located.
+     * @param Job   $job   Job to be executed.
+     * @return array
+     */
+    protected function executeJob(Queue $queue, Job $job)
+    {
         if ($job == false) {
             return ['status' => 'nojob'];
         }
