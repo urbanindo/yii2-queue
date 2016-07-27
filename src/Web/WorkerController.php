@@ -125,7 +125,7 @@ class WorkerController extends \yii\web\Controller
      */
     protected function getQueue() {
         $queueComponent = $this->getComponentParamFromRequest();
-        if (!empty($queueComponent)) {
+        if (empty($queueComponent)) {
             $queueComponent = $this->defaultQueue;
         }
         return \yii\di\Instance::ensure($queueComponent, '\UrbanIndo\Yii2\Queue\Queue');
