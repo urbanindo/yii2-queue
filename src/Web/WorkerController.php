@@ -10,7 +10,9 @@ namespace UrbanIndo\Yii2\Queue\Web;
 
 use UrbanIndo\Yii2\Queue\Job;
 use UrbanIndo\Yii2\Queue\Queue;
+use UrbanIndo\Yii2\Queue\Queues\DummyQueue;
 use Yii;
+use yii\base\NotSupportedException;
 
 /**
  * WorkerController is a web controller class that fetches work from queue and
@@ -59,8 +61,19 @@ class WorkerController extends \yii\web\Controller
             'route' => $route,
             'data' => \yii\helpers\Json::decode($data),
         ]);
-        $queue = $this->getQueue();
+        $queue = new DummyQueue([
+            'module' => $this->getDummyModule()
+        ]);
         return $this->executeJob($queue, $job);
+    }
+
+    /**
+     * @throws NotSupportedException Inherit this class to use run-task.
+     * @return string Module name.
+     */
+    protected function getDummyModule()
+    {
+        throw new NotSupportedException();
     }
 
     /**
