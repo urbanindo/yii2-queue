@@ -84,6 +84,9 @@ class WorkerController extends \yii\web\Controller
     {
         $queue = $this->getQueue();
         $job = $queue->fetch();
+        if ($job == false) {
+            return ['status' => 'nojob'];
+        }
         return $this->executeJob($queue, $job);
     }
 
@@ -94,9 +97,6 @@ class WorkerController extends \yii\web\Controller
      */
     protected function executeJob(Queue $queue, Job $job)
     {
-        if ($job == false) {
-            return ['status' => 'nojob'];
-        }
         $start = time();
         $return = [
             'jobId' => $job->id,
