@@ -211,7 +211,11 @@ abstract class Queue extends \yii\base\Component
             } else {
                 $id = $job->route;
             }
-            \Yii::error("Fatal Error: Error running route '{$id}'. Message: {$e->getMessage()}", 'yii2queue');
+            $params = json_encode($job->data);
+            \Yii::error(
+                "Fatal Error: Error running route '{$id}'. Message: {$e->getMessage()}. Parameters: {$params}",
+                'yii2queue'
+            );
             if ($this->releaseOnFailure) {
                 $this->release($job);
             }
