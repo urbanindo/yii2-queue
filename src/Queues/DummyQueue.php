@@ -24,11 +24,11 @@ class DummyQueue extends Queue
      *
      * @param Job $job The job.
      * @return boolean Whether operation succeed.
-     * @throws NotSupportedException Can't uses this queue to post job.
      */
     protected function postJob(Job $job)
     {
-        throw new NotSupportedException();
+        $this->run($job);
+        return true;
     }
 
     /**
