@@ -125,7 +125,7 @@ class DbQueue extends \UrbanIndo\Yii2\Queue\Queue
                     ->select('*')
                     ->from($this->tableName)
                     ->where(['status' => self::STATUS_READY])
-                    ->orderBy(['id' => SORT_DESC])
+                    ->orderBy(['id' => SORT_ASC])
                     ->limit(1)
                     ->one($this->db);
     }
