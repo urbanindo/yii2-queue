@@ -43,7 +43,6 @@ return [
             'class' => 'UrbanIndo\Yii2\Queue\Console\Controller',
             //'sleepTimeout' => 1
         ],
-        
     ],
 ];
 ```
@@ -65,14 +64,15 @@ the task in the component. For example, queue using AWS SQS
 'components' => [
     'queue' => [
         'class' => 'UrbanIndo\Yii2\Queue\Queues\SqsQueue',
-        'module' => 'task',
-        'url' => 'https://sqs.ap-southeast-1.amazonaws.com/123456789012/queue',
-		'config' => [
-			'key' => 'AKIA1234567890123456',
-			'secret' => '1234567890123456789012345678901234567890',
-			'region' => 'ap-southeast-1',
-			'version' => 'latest'
-        ],
+            'module' => 'task',
+            'url' => 'https://sqs.ap-southeast-1.amazonaws.com/123456789012/queue',
+            'config' => [
+                'key' => 'AKIA1234567890123456',
+                'secret' => '1234567890123456789012345678901234567890',
+                'region' => 'ap-southeast-1',
+                'version' => 'latest'
+            ]
+        ]
     ]
 ]
 ```
@@ -82,7 +82,7 @@ Or using Database queue
 ```php
 'components' => [
     'db' => [
-        //the db component
+        // the db component
     ],
     'queue' => [
         'class' => 'UrbanIndo\Yii2\Queue\Queues\DbQueue',
@@ -103,9 +103,10 @@ In the task module create a controller that extends `UrbanIndo\Yii2\Queue\Worker
 e.g.
 
 ```php
-class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
-
-    public function actionBar($param1, $param2){
+class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller
+{
+    public function actionBar($param1, $param2)
+    {
         echo $param1;
     }
 }
@@ -118,11 +119,13 @@ chance.
 e.g.
 
 ```php
-class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller {
-
-    public function actionBar($param1, $param2){
+class FooController extends UrbanIndo\Yii2\Queue\Worker\Controller
+{
+    public function actionBar($param1, $param2)
+    {
         try {
-        } catch (\Exception $ex){
+            // do some stuff
+        } catch (\Exception $ex) {
             \Yii::error('Ouch something just happened');
             return false;
         }
@@ -161,7 +164,7 @@ yii queue/post 'foo/bar' '{"param1": "foo", "param2": "bar"}'
 Job can also be posted as anonymous function. Be careful using this.
 
 ```php
-Yii::$app->queue->post(new Job(function(){
+Yii::$app->queue->post(new Job(function() {
     echo 'Hello World!';
 }));
 ```
@@ -174,19 +177,21 @@ feature, we can defer a process executed after a certain event using queue.
 To use this, add behavior in a component and implement the defined event handler.
 
 ```php
-    public function behaviors() {
-        return array_merge([
+    public function behaviors()
+    {
+        return [
             [
                 'class' => \UrbanIndo\Yii2\Queue\Behaviors\DeferredEventBehavior::class,
                 'events' => [
                     self::EVENT_AFTER_VALIDATE => 'deferAfterValidate',
                 ]
             ]
-        ]);
+        ];
     }
 
-    public function deferAfterValidate(){
-        //Do something here.
+    public function deferAfterValidate()
+    {
+        // do something here
     }
 ```
 
@@ -215,12 +220,12 @@ to the controller map.
 For example
 
 ```php
-    'controllerMap' => [
-        'queue' => [
-            /* @var $queue UrbanIndo\Yii2\Queue\Web\Controller */
-            'class' => 'UrbanIndo\Yii2\Queue\Web\Controller'
-        ]
-    ],
+'controllerMap' => [
+    'queue' => [
+        /* @var $queue UrbanIndo\Yii2\Queue\Web\Controller */
+        'class' => 'UrbanIndo\Yii2\Queue\Web\Controller'
+    ]
+],
 ```
 
 To post this use
@@ -234,23 +239,23 @@ To limit the access to the controller, we can use `\yii\filters\AccessControl` f
 For example to filter by IP address, we can use something like this.
 
 ```php
-    'controllerMap' => [
-        'queue' => [
-            /* @var $queue UrbanIndo\Yii2\Queue\Web\Controller */
-            'class' => 'UrbanIndo\Yii2\Queue\Web\Controller',
-            'as access' => [
-                'class' => '\yii\filters\AccessControl',
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'ips' => [
-                            '127.0.0.1'
-                        ]
+'controllerMap' => [
+    'queue' => [
+        /* @var $queue UrbanIndo\Yii2\Queue\Web\Controller */
+        'class' => 'UrbanIndo\Yii2\Queue\Web\Controller',
+        'as access' => [
+            'class' => '\yii\filters\AccessControl',
+            'rules' => [
+                [
+                    'allow' => true,
+                    'ips' => [
+                        '127.0.0.1'
                     ]
                 ]
             ]
         ]
-    ],
+    ]
+],
 ```
 
 ## Testing
