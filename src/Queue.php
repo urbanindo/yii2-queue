@@ -194,7 +194,7 @@ abstract class Queue extends \yii\base\Component
         if (!$beforeEvent->isValid) {
             return;
         }
-        \Yii::info('Running job', 'yii2queue');
+        \Yii::info("Running job #: {$job->id}", 'yii2queue');
         try {
             if ($job->isCallable()) {
                 $retval = $job->runCallable();
@@ -230,7 +230,7 @@ abstract class Queue extends \yii\base\Component
         $this->trigger(self::EVENT_AFTER_RUN, new Event(['job' => $job, 'returnValue' => $retval]));
         
         if ($retval !== false) {
-            \Yii::info('Deleting job', 'yii2queue');
+            \Yii::info("Deleting job #: {$job->id}", 'yii2queue');
             $this->delete($job);
         } else if ($this->releaseOnFailure) {
             $this->release($job);

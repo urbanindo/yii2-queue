@@ -8,6 +8,7 @@
 
 namespace UrbanIndo\Yii2\Queue\Console;
 
+use Yii;
 use UrbanIndo\Yii2\Queue\Job;
 use UrbanIndo\Yii2\Queue\Queue;
 use yii\base\InvalidParamException;
@@ -25,7 +26,7 @@ use yii\base\InvalidParamException;
  * ];
  * 
  * OR
- * 
+ *
  * return [
  *    // ...
  *     'controllerMap' => [
@@ -149,15 +150,20 @@ class Controller extends \yii\console\Controller
         $process->setTimeout($timeout);
         $process->setIdleTimeout(null);
         $process->run();
+
+        $out = $process->getOutput();
+        $err = $process->getErrorOutput();
+
         if ($process->isSuccessful()) {
-            //TODO logging.
-            $this->stdout($process->getOutput() . PHP_EOL);
-            $this->stdout($process->getErrorOutput() . PHP_EOL);
+            $this->stdout($out . PHP_EOL);
+            $this->stdout($err . PHP_EOL);
         } else {
-            //TODO logging.
-            $this->stdout($process->getOutput() . PHP_EOL);
-            $this->stdout($process->getErrorOutput() . PHP_EOL);
+            $this->stderr($out . PHP_EOL);
+            $this->stderr($err . PHP_EOL);
+            Yii::warning($out, 'yii2queue');
+            Yii::warning($err, 'yii2queue');
         }
+
     }
 
     /**
@@ -170,12 +176,15 @@ class Controller extends \yii\console\Controller
             switch ($signal) {
                 case SIGTERM:
                     $this->stderr('Caught SIGTERM');
+                    Yii::error('Caught SIGTERM', 'yii2queue');
                     exit;
                 case SIGKILL:
                     $this->stderr('Caught SIGKILL');
+                    Yii::error('Caught SIGKILL', 'yii2queue');
                     exit;
                 case SIGINT:
                     $this->stderr('Caught SIGINT');
+                    Yii::error('Caught SIGINT', 'yii2queue');
                     exit;
             }
         };
