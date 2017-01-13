@@ -178,10 +178,6 @@ class Controller extends \yii\console\Controller
                     $this->stderr('Caught SIGTERM');
                     Yii::error('Caught SIGTERM', 'yii2queue');
                     exit;
-                case SIGKILL:
-                    $this->stderr('Caught SIGKILL');
-                    Yii::error('Caught SIGKILL', 'yii2queue');
-                    exit;
                 case SIGINT:
                     $this->stderr('Caught SIGINT');
                     Yii::error('Caught SIGINT', 'yii2queue');
