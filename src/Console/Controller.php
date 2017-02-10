@@ -116,9 +116,28 @@ class Controller extends \yii\console\Controller
         $this->initSignalHandler();
         $command = PHP_BINARY . " {$this->getScriptPath()} {$this->_name}/run";
         declare(ticks = 1);
+
+        $queueSize = intval($this->queue->getSize());
+
         while (true) {
+
+            if($this->queue->waitSecondsIfNoQueue > 0){
+                $this->stdout("Queue {$queueSize} \n");
+                if($queueSize == 0){
+                    $this->stdout("NO Queue, Waiting {$this->queue->waitSecondsIfNoQueue}s to save cpu... \n");
+                    sleep($this->queue->waitSecondsIfNoQueue);
+                    $queueSize = $this->queue->getSize();
+                }else{
+                    $queueSize--;
+                    if($queueSize<=0){
+                        $queueSize = $this->queue->getSize();
+                    }
+                }
+            }
+
             $this->stdout("Running new process...\n");
             $this->runQueueFetching($command, $cwd, $timeout, $env);
+
             if ($this->sleepTimeout > 0) {
                 sleep($this->sleepTimeout);
             }

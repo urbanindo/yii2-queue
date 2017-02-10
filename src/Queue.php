@@ -116,6 +116,13 @@ abstract class Queue extends \yii\base\Component
     public $releaseOnFailure = true;
 
     /**
+     * Set a value of seconds to wait during the listener loop if there is no queue
+     * to save CPU.
+     * @var integer
+     */
+    public $waitSecondsIfNoQueue = 0;
+
+    /**
      * Initializes the module.
      * @return void
      */
