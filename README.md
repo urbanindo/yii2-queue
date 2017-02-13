@@ -42,6 +42,7 @@ return [
         'queue' => [
             'class' => 'UrbanIndo\Yii2\Queue\Console\Controller',
             //'sleepTimeout' => 1
+            //'waitSecondsIfNoQueue' = 10
         ],
     ],
 ];
