@@ -110,7 +110,7 @@ class Controller extends \yii\console\Controller
      * The format for each element is 'KEY=VAL'.
      * @return void
      */
-    public function actionListen($cwd = null, $timeout = null, $env = [])
+    public function actionListen($cwd = null, $timeout = null, array $env = null)
     {
         $this->stdout("Listening to queue...\n");
         $this->initSignalHandler();
@@ -157,7 +157,7 @@ class Controller extends \yii\console\Controller
         $command,
         $cwd = null,
         $timeout = null,
-        array $env = []
+        array $env = null
     ) {
         $process = new \Symfony\Component\Process\Process(
             $command,
