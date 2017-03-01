@@ -98,7 +98,7 @@ class Controller extends \yii\console\Controller
      */
     protected function getScriptPath()
     {
-        return getcwd() . DIRECTORY_SEPARATOR . $_SERVER['argv'][0];
+        return realpath($_SERVER['argv'][0]);
     }
 
     /**
