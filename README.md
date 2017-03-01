@@ -68,8 +68,10 @@ the task in the component. For example, queue using AWS SQS
             'module' => 'task',
             'url' => 'https://sqs.ap-southeast-1.amazonaws.com/123456789012/queue',
             'config' => [
-                'key' => 'AKIA1234567890123456',
-                'secret' => '1234567890123456789012345678901234567890',
+                'credentials' => [
+                    'key' => 'AKIA1234567890123456',
+                    'secret' => '1234567890123456789012345678901234567890'
+                ],
                 'region' => 'ap-southeast-1',
                 'version' => 'latest'
             ]
