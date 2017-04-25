@@ -139,7 +139,7 @@ abstract class Queue extends \yii\base\Component
      * @param Job $job The job.
      * @return boolean Whether operation succeed.
      */
-    public function post(Job &$job)
+    public function post(Job $job)
     {
         $this->trigger(self::EVENT_BEFORE_POST, $beforeEvent = new Event(['job' => $job]));
         if (!$beforeEvent->isValid) {
