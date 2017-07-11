@@ -42,7 +42,6 @@ return [
         'queue' => [
             'class' => 'UrbanIndo\Yii2\Queue\Console\Controller',
             //'sleepTimeout' => 1
-            //'waitSecondsIfNoQueue' = 10
         ],
     ],
 ];
@@ -92,6 +91,8 @@ Or using Database queue
         'db' => 'db',
         'tableName' => 'queue',
         'module' => 'task',
+        // sleep for 10 seconds if there's no item in the queue (to save CPU)
+        'waitSecondsIfNoQueue' => 10,
     ]
 ]
 ```
