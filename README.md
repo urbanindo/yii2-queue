@@ -6,6 +6,7 @@ This provides queue component for Yii2.
 [![Total Downloads](https://poser.pugx.org/urbanindo/yii2-queue/downloads.svg)](https://packagist.org/packages/urbanindo/yii2-queue)
 [![Latest Unstable Version](https://poser.pugx.org/urbanindo/yii2-queue/v/unstable.svg)](https://packagist.org/packages/urbanindo/yii2-queue)
 [![Build Status](https://travis-ci.org/urbanindo/yii2-queue.svg)](https://travis-ci.org/urbanindo/yii2-queue)
+[![codecov](https://codecov.io/gh/urbanindo/yii2-queue/branch/master/graph/badge.svg)](https://codecov.io/gh/urbanindo/yii2-queue)
 
 ## Requirements
 You need [PCNT extension](http://php.net/manual/en/book.pcntl.php) enabled to run listener
