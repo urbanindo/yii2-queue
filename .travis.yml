@@ -15,7 +15,8 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
-script: ./vendor/bin/phpunit --coverage-clover
+script:
+  - ./vendor/bin/phpunit --coverage-clover 'reports/clover.xml'
 
 before_script:
   #MySQL database init
