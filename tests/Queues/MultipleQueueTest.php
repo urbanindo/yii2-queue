@@ -1,7 +1,7 @@
 <?php
 
 class MultipleQueueTest extends PHPUnit_Framework_TestCase {
-    
+
     public function test() {
         $queue = Yii::createObject([
             'class' => '\UrbanIndo\Yii2\Queue\Queues\MultipleQueue',
@@ -23,7 +23,7 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
                 'class' => 'UrbanIndo\Yii2\Queue\Strategies\RandomStrategy',
             ]
         ]);
-        
+
         $this->assertTrue($queue instanceof UrbanIndo\Yii2\Queue\Queues\MultipleQueue);
         /* @var $queue UrbanIndo\Yii2\Queue\MultipleQueue */
         $this->assertCount(4, $queue->queues);
@@ -32,12 +32,12 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
         }
         $this->assertTrue($queue->strategy instanceof \UrbanIndo\Yii2\Queue\Strategies\Strategy);
         $this->assertTrue($queue->strategy instanceof \UrbanIndo\Yii2\Queue\Strategies\RandomStrategy);
-        
+
         $queue0 = $queue->getQueue(0);
         $this->assertTrue($queue0 instanceof \UrbanIndo\Yii2\Queue\Queues\MemoryQueue);
         $queue4 = $queue->getQueue(4);
         $this->assertNull($queue4);
-        
+
         $njob = $queue->strategy->fetch();
         $this->assertFalse($njob);
         $i = 0;
@@ -56,13 +56,14 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
         $this->assertContains($index, range(0, 3));
         $fjob1->runCallable();
         $this->assertEquals(1, $i);
-        
-        $queue->postToQueue(new \UrbanIndo\Yii2\Queue\Job([
+
+        $job = new \UrbanIndo\Yii2\Queue\Job([
             'route' => function() use (&$i) {
                 $i += 1;
             }
-        ]), 3);
-        
+        ]);
+        $queue->postToQueue($job, 3);
+
         do {
             //this some times will exist
             $fjob2 = $queue->fetch();
