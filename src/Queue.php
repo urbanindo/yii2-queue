@@ -22,7 +22,7 @@ abstract class Queue extends \yii\base\Component
      * Json serializer.
      */
     const SERIALIZER_JSON = 'json';
-    
+
     /**
      * PHP serializer.
      */
@@ -37,17 +37,17 @@ abstract class Queue extends \yii\base\Component
      * Event executed before a job is posted to the queue.
      */
     const EVENT_AFTER_POST = 'afterPost';
-    
+
     /**
      * Event executed before a job is being fetched from the queue.
      */
     const EVENT_BEFORE_FETCH = 'beforeFetch';
-    
+
     /**
      * Event executed after a job is being fetched from the queue.
      */
     const EVENT_AFTER_FETCH = 'afterFetch';
-    
+
     /**
      * Event executed before a job is being deleted from the queue.
      */
@@ -57,7 +57,7 @@ abstract class Queue extends \yii\base\Component
      * Event executed after a job is being deleted from the queue.
      */
     const EVENT_AFTER_DELETE = 'afterDelete';
-    
+
     /**
      * Event executed before a job is being released from the queue.
      */
@@ -67,7 +67,7 @@ abstract class Queue extends \yii\base\Component
      * Event executed after a job is being released from the queue.
      */
     const EVENT_AFTER_RELEASE = 'afterRelease';
-    
+
     /**
      * Event executed before a job is being executed.
      */
@@ -101,13 +101,13 @@ abstract class Queue extends \yii\base\Component
      * @var \yii\base\Module
      */
     public $module;
-    
+
     /**
      * Choose the serializer.
      * @var string
      */
     public $serializer = 'json';
-    
+
     /**
      * This will release automatically on execution failure. i.e. when
      * the `run` method returns false or catch exception.
@@ -121,6 +121,60 @@ abstract class Queue extends \yii\base\Component
      * @var integer
      */
     public $waitSecondsIfNoQueue = 0;
+
+    /**
+     * @var int multi threading
+     */
+    public $maxProcesses = 1;
+
+    /**
+     * @var int interval to check if processes have finished
+     */
+    public $waitSecondsIfNoProcesses = 5;
+
+    /**
+     * @var bool whether we want a kill signal to propagate to threads
+     * or if we want them to finish on their own, treat carefully
+     */
+    public $propagateSignals = false;
+
+    /**
+     * @var int idle timeout on each single process
+     * e.g. timeout process after x seconds if there is no output
+     */
+    public $idleTimeout = null;
+
+    /**
+     * @var int $sleepTimeout sleep timeout to be slept after each process is launched
+     * forced to a minimum of one in order to register the process after its run
+     */
+    public $sleepTimeout = 1;
+
+    /**
+     * @var int $timeout seconds after which the process will timeout
+     */
+    public $timeout = null;
+
+    /**
+     * @var obj ProcessRunner the process runner dependency
+     */
+    public $processRunner = null;
+
+    /**
+     * @var str $command command to run single jobs process
+     */
+    public $command = 'queue/run';
+
+    /**
+     * register the process runner depndency
+     * @param ProcessRunner $processRunner
+     * @param array $config additional params
+     */
+    public function __construct(ProcessRunner $processRunner, array $config = [])
+    {
+        parent::__construct($config);
+        $this->processRunner = $processRunner->setQueue($this);
+    }
 
     /**
      * Initializes the module.
@@ -145,16 +199,16 @@ abstract class Queue extends \yii\base\Component
         if (!$beforeEvent->isValid) {
             return false;
         }
-        
+
         $return = $this->postJob($job);
         if (!$return) {
             return false;
         }
-        
+
         $this->trigger(self::EVENT_AFTER_POST, new Event(['job' => $job]));
         return true;
     }
-    
+
     /**
      * Post new job to the queue.  Override this for queue implementation.
      *
@@ -172,16 +226,16 @@ abstract class Queue extends \yii\base\Component
     public function fetch()
     {
         $this->trigger(self::EVENT_BEFORE_FETCH);
-        
+
         $job = $this->fetchJob();
         if ($job == false) {
             return false;
         }
-        
+
         $this->trigger(self::EVENT_AFTER_FETCH, new Event(['job' => $job]));
         return $job;
     }
-    
+
     /**
      * Return next job from the queue. Override this for queue implementation.
      * @return Job|boolean the job or false if not found.
@@ -233,9 +287,9 @@ abstract class Queue extends \yii\base\Component
                 500
             );
         }
-        
+
         $this->trigger(self::EVENT_AFTER_RUN, new Event(['job' => $job, 'returnValue' => $retval]));
-        
+
         if ($retval !== false) {
             \Yii::info("Deleting job #: {$job->id}", 'yii2queue');
             $this->delete($job);
@@ -257,16 +311,16 @@ abstract class Queue extends \yii\base\Component
         if (!$beforeEvent->isValid) {
             return false;
         }
-        
+
         $return = $this->deleteJob($job);
         if (!$return) {
             return false;
         }
-        
+
         $this->trigger(self::EVENT_AFTER_DELETE, new Event(['job' => $job]));
         return true;
     }
-    
+
     /**
      * Delete the job. Override this for the queue implementation.
      *
@@ -274,7 +328,7 @@ abstract class Queue extends \yii\base\Component
      * @return boolean whether the operation succeed.
      */
     abstract protected function deleteJob(Job $job);
-    
+
     /**
      * Release the job. This will trigger event EVENT_BEFORE_RELEASE and
      * EVENT_AFTER_RELEASE.
@@ -288,16 +342,16 @@ abstract class Queue extends \yii\base\Component
         if (!$beforeEvent->isValid) {
             return false;
         }
-        
+
         $return = $this->releaseJob($job);
         if (!$return) {
             return false;
         }
-        
+
         $this->trigger(self::EVENT_AFTER_RELEASE, new Event(['job' => $job]));
         return true;
     }
-    
+
     /**
      * Release the job. Override this for the queue implementation.
      *
@@ -334,7 +388,7 @@ abstract class Queue extends \yii\base\Component
         $obj->header['signature'] = $signature;
         return $obj;
     }
-    
+
     /**
      * @param array $array The message to be deserialize.
      * @return array
@@ -355,7 +409,7 @@ abstract class Queue extends \yii\base\Component
         }
         return $data;
     }
-    
+
     /**
      * Pack job so that it can be send.
      *
@@ -397,13 +451,13 @@ abstract class Queue extends \yii\base\Component
         }
         return $data;
     }
-    
+
     /**
      * Returns the number of queue size.
      * @return integer
      */
     abstract public function getSize();
-    
+
     /**
      * Purge the whole queue.
      * @return boolean
