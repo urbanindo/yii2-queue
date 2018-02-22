@@ -14,7 +14,7 @@ namespace UrbanIndo\Yii2\Queue;
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.24
  */
-class Job extends \yii\base\Object
+class Job extends \yii\base\BaseObject
 {
 
     /**
@@ -37,7 +37,7 @@ class Job extends \yii\base\Object
      * Stores the header.
      * This can be different for each queue provider.
      *
-     * @var header
+     * @var array
      */
     public $header = [];
 

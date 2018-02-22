@@ -1,35 +1,36 @@
 {
-    "name": "urbanindo/yii2-queue",
-    "description": "Queue component for Yii2",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Petra Barus",
-            "email": "petra.barus@gmail.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {
-        "php": ">=5.5.0",
-        "yiisoft/yii2": "*",
-        "aws/aws-sdk-php": ">=2.4",
-        "symfony/process": ">=2.4",
-        "jeremeamia/SuperClosure": "~2.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "4.6.*",
-        "phpunit/dbunit": ">=1.2",
-        "phpunit/php-code-coverage": "2.2.4",
-        "fzaninotto/faker": "dev-master",
-        "flow/jsonpath": "dev-master",
-        "yiisoft/yii2-coding-standards": "*",
-        "yiisoft/yii2-redis": "*",
-        "videlalvaro/php-amqplib": "2.5.*",
-        "squizlabs/php_codesniffer": "2.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "UrbanIndo\\Yii2\\Queue\\": "src/"
-        }
+  "name": "urbanindo/yii2-queue",
+  "description": "Queue component for Yii2",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Petra Barus",
+      "email": "petra.barus@gmail.com"
     }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=5.5.0",
+    "ext-pcntl": "*",
+    "yiisoft/yii2": ">=2.0.13",
+    "aws/aws-sdk-php": ">=2.4",
+    "symfony/process": "~2.0",
+    "jeremeamia/SuperClosure": "~2.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.6.*",
+    "phpunit/dbunit": "~1.0",
+    "phpunit/php-code-coverage": "2.2.4",
+    "fzaninotto/faker": "dev-master",
+    "flow/jsonpath": "dev-master",
+    "yiisoft/yii2-coding-standards": "*",
+    "yiisoft/yii2-redis": "*",
+    "videlalvaro/php-amqplib": "2.5.*",
+    "squizlabs/php_codesniffer": "2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "UrbanIndo\\Yii2\\Queue\\": "src/"
+    }
+  }
 }
