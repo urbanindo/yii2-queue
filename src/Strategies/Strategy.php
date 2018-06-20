@@ -17,12 +17,12 @@ use UrbanIndo\Yii2\Queue\Job;
  * @author Petra Barus <petra.barus@gmail.com>
  * @since 2015.02.25
  */
-abstract class Strategy extends \yii\base\Object
+abstract class Strategy extends \yii\base\BaseObject
 {
 
     /**
      * Stores the queue.
-     * @var \UrbanIndo\Yii2\Queue\MultipleQueue
+     * @var \UrbanIndo\Yii2\Queue\Queues\MultipleQueue
      */
     protected $_queue;
 
