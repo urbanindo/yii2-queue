@@ -10,12 +10,12 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": ">=5.5.0",
+    "php": ">=7.0",
     "ext-pcntl": "*",
     "yiisoft/yii2": ">=2.0.13",
     "aws/aws-sdk-php": ">=2.4",
-    "symfony/process": "~2.0",
-    "jeremeamia/SuperClosure": "~2.0"
+    "symfony/process": ">=2.4",
+    "jeremeamia/SuperClosure": ">=2.0"
   },
   "require-dev": {
     "phpunit/phpunit": "4.6.*",
