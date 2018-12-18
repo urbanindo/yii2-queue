@@ -1,7 +1,12 @@
 <?php
 
+namespace UrbanIndo\Yii2\QueueTests\Behaviors;
 
-class DeferredEventBehaviorTest extends PHPUnit_Framework_TestCase  {
+use PHPUnit\Framework\TestCase as BaseTestCase;
+use Yii;
+
+class DeferredEventBehaviorTest extends BaseTestCase
+{
     
     protected function setUp() {
         Yii::$app->getDb()->createCommand()->createTable('test_deferred_event_behaviors', [

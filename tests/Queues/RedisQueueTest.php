@@ -1,5 +1,14 @@
 <?php
 
+namespace UrbanIndo\Yii2\QueueTests\Queues;
+
+use UrbanIndo\Yii2\Queue\Job;
+use UrbanIndo\Yii2\Queue\Queues\RedisQueue;
+use UrbanIndo\Yii2\QueueTests\TestCase;
+use Faker\Factory;
+use Yii;
+use yii\redis\Connection;
+
 class RedisQueueTest extends TestCase
 {
     static $counter = 0;
@@ -8,17 +17,17 @@ class RedisQueueTest extends TestCase
     {
         parent::setUp();
         RedisQueueTest::$counter = 0;
-        $faker = Faker\Factory::create();
+        $faker = Factory::create();
         $queueName = 'queue_' . $faker->firstNameMale;
         $this->mockApplication([
             'components' => [
                 'redis' => [
-                    'class' => '\yii\redis\Connection',
+                    'class' => Connection::class,
                     'hostname' => 'localhost',
                     'port' => 6379,
                 ],
                 'queue' => [
-                    'class' => '\UrbanIndo\Yii2\Queue\Queues\RedisQueue',
+                    'class' => RedisQueue::class,
                     'key' => $queueName,
                 ]
             ]
@@ -46,12 +55,12 @@ class RedisQueueTest extends TestCase
         $queue = $this->getQueue();
         $this->assertEquals(0, $this->getCountItems());
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             RedisQueueTest::$counter += 1;
         }]));
         $this->assertEquals(1, $this->getCountItems());
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             RedisQueueTest::$counter += 1;
         }]));
         $this->assertEquals(2, $this->getCountItems());
@@ -66,18 +75,18 @@ class RedisQueueTest extends TestCase
         $job = $queue->fetch();
         $this->assertFalse($job);
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             RedisQueueTest::$counter += 1;
         }]));
         $this->assertEquals(1, $this->getCountItems());
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             RedisQueueTest::$counter += 1;
         }]));
         $this->assertEquals(2, $this->getCountItems());
         
         $job = $queue->fetch();
-        $this->assertTrue($job instanceof \UrbanIndo\Yii2\Queue\Job);
+        $this->assertTrue($job instanceof Job);
 
         $this->assertEquals(1, $this->getCountItems());
     }
@@ -90,19 +99,19 @@ class RedisQueueTest extends TestCase
         
         $this->assertFalse($job);
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             RedisQueueTest::$counter += 1;
         }]));
         
         $job = $queue->fetch();
         
-        $this->assertTrue($job instanceof UrbanIndo\Yii2\Queue\Job);
+        $this->assertTrue($job instanceof Job);
         
         $queue->run($job);
         
         $this->assertEquals(1, RedisQueueTest::$counter);
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             RedisQueueTest::$counter += 2;
         }]));
         
@@ -119,14 +128,14 @@ class RedisQueueTest extends TestCase
         $key = $queue->key;
         $this->assertEquals(0, $this->getCountItems());
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             RedisQueueTest::$counter += 1;
         }]));
         $this->assertEquals(1, $this->getCountItems());
         
         $job = $queue->fetch();
         
-        $this->assertTrue($job instanceof \UrbanIndo\Yii2\Queue\Job);
+        $this->assertTrue($job instanceof Job);
 
         $this->assertEquals(0, $this->getCountItems());
         

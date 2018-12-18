@@ -1,47 +1,59 @@
 <?php
 
-class MultipleQueueTest extends PHPUnit_Framework_TestCase {
+namespace UrbanIndo\Yii2\QueueTests\Queues;
 
-    public function test() {
+use PHPUnit\Framework\TestCase;
+use UrbanIndo\Yii2\Queue\Job;
+use UrbanIndo\Yii2\Queue\Queues\MemoryQueue;
+use UrbanIndo\Yii2\Queue\Queues\MultipleQueue;
+use UrbanIndo\Yii2\Queue\Strategies\RandomStrategy;
+use UrbanIndo\Yii2\Queue\Strategies\Strategy;
+use Yii;
+
+class MultipleQueueTest extends TestCase
+{
+
+    public function test()
+    {
         $queue = Yii::createObject([
-            'class' => '\UrbanIndo\Yii2\Queue\Queues\MultipleQueue',
+            'class' => MultipleQueue::class,
             'queues' => [
                 [
-                    'class' => '\UrbanIndo\Yii2\Queue\Queues\MemoryQueue'
+                    'class' => MemoryQueue::class,
                 ],
                 [
-                    'class' => '\UrbanIndo\Yii2\Queue\Queues\MemoryQueue'
+                    'class' => MemoryQueue::class,
                 ],
                 [
-                    'class' => '\UrbanIndo\Yii2\Queue\Queues\MemoryQueue'
+                    'class' => MemoryQueue::class,
                 ],
                 [
-                    'class' => '\UrbanIndo\Yii2\Queue\Queues\MemoryQueue'
+                    'class' => MemoryQueue::class,
                 ]
             ],
             'strategy' => [
-                'class' => 'UrbanIndo\Yii2\Queue\Strategies\RandomStrategy',
+                'class' => RandomStrategy::class,
             ]
         ]);
 
-        $this->assertTrue($queue instanceof UrbanIndo\Yii2\Queue\Queues\MultipleQueue);
-        /* @var $queue UrbanIndo\Yii2\Queue\MultipleQueue */
+        $this->assertTrue($queue instanceof MultipleQueue);
+        /* @var $queue MultipleQueue */
         $this->assertCount(4, $queue->queues);
         foreach($queue->queues as $tqueue) {
-            $this->assertTrue($tqueue instanceof \UrbanIndo\Yii2\Queue\Queues\MemoryQueue);
+            $this->assertTrue($tqueue instanceof MemoryQueue);
         }
-        $this->assertTrue($queue->strategy instanceof \UrbanIndo\Yii2\Queue\Strategies\Strategy);
-        $this->assertTrue($queue->strategy instanceof \UrbanIndo\Yii2\Queue\Strategies\RandomStrategy);
+        $this->assertTrue($queue->strategy instanceof Strategy);
+        $this->assertTrue($queue->strategy instanceof RandomStrategy);
 
         $queue0 = $queue->getQueue(0);
-        $this->assertTrue($queue0 instanceof \UrbanIndo\Yii2\Queue\Queues\MemoryQueue);
+        $this->assertTrue($queue0 instanceof MemoryQueue);
         $queue4 = $queue->getQueue(4);
         $this->assertNull($queue4);
 
         $njob = $queue->strategy->fetch();
         $this->assertFalse($njob);
         $i = 0;
-        $queue->post(new \UrbanIndo\Yii2\Queue\Job([
+        $queue->post(new Job([
             'route' => function() use (&$i) {
                 $i += 1;
             }
@@ -50,14 +62,14 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
             //this some times will exist
             $fjob1 = $queue->fetch();
         } while ($fjob1 == false);
-        $this->assertTrue($fjob1 instanceof \UrbanIndo\Yii2\Queue\Job);
+        $this->assertTrue($fjob1 instanceof Job);
         /* @var $fjob1 Job */
-        $index = $fjob1->header[\UrbanIndo\Yii2\Queue\Queues\MultipleQueue::HEADER_MULTIPLE_QUEUE_INDEX];
+        $index = $fjob1->header[MultipleQueue::HEADER_MULTIPLE_QUEUE_INDEX];
         $this->assertContains($index, range(0, 3));
         $fjob1->runCallable();
         $this->assertEquals(1, $i);
 
-        $job = new \UrbanIndo\Yii2\Queue\Job([
+        $job = new Job([
             'route' => function() use (&$i) {
                 $i += 1;
             }
@@ -68,8 +80,8 @@ class MultipleQueueTest extends PHPUnit_Framework_TestCase {
             //this some times will exist
             $fjob2 = $queue->fetch();
         } while ($fjob2 == false);
-        $this->assertTrue($fjob2 instanceof \UrbanIndo\Yii2\Queue\Job);
-        $index2 = $fjob2->header[\UrbanIndo\Yii2\Queue\Queues\MultipleQueue::HEADER_MULTIPLE_QUEUE_INDEX];
+        $this->assertTrue($fjob2 instanceof Job);
+        $index2 = $fjob2->header[MultipleQueue::HEADER_MULTIPLE_QUEUE_INDEX];
         $this->assertEquals(3, $index2);
         $fjob2->runCallable();
         $this->assertEquals(2, $i);

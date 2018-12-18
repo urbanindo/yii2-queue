@@ -1,8 +1,16 @@
 <?php
 
-class ActiveRecordDeferredEventBehaviorTest extends PHPUnit_Framework_TestCase {
+namespace UrbanIndo\Yii2\QueueTests\Behaviors;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
+use UrbanIndo\Yii2\Queue\Behaviors\ActiveRecordDeferredEventBehavior;
+use Yii;
+
+class ActiveRecordDeferredEventBehaviorTest extends BaseTestCase
+{
     
-    protected function setUp() {
+    protected function setUp()
+    {
         Yii::$app->getDb()->createCommand()->createTable('test_active_record_deferred_event_behaviors', [
             'id' => 'pk',
             'name' => 'string',
@@ -10,7 +18,8 @@ class ActiveRecordDeferredEventBehaviorTest extends PHPUnit_Framework_TestCase {
         Yii::$app->queue->purge();
     }
     
-    public function testEventHandler() {
+    public function testEventHandler()
+    {
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
         $this->assertEquals(0, $queue->getSize());
@@ -52,16 +61,19 @@ class ActiveRecordDeferredEventBehaviorTest extends PHPUnit_Framework_TestCase {
     
 }
 
-class TestActiveRecord extends \yii\db\ActiveRecord {
+class TestActiveRecord extends \yii\db\ActiveRecord
+{
     
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'test_active_record_deferred_event_behaviors';
     }
     
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             [
-                'class' => UrbanIndo\Yii2\Queue\Behaviors\ActiveRecordDeferredEventBehavior::class,
+                'class' => ActiveRecordDeferredEventBehavior::class,
                 'events' => [
                     self::EVENT_AFTER_INSERT => 'deferAfterInsert',
                     self::EVENT_AFTER_UPDATE => 'deferAfterUpdate',
@@ -71,19 +83,22 @@ class TestActiveRecord extends \yii\db\ActiveRecord {
         ];
     }
     
-    public function scenarios() {
+    public function scenarios()
+    {
         return [
             'default' => ['name', 'id'],
             'test' => ['name', 'id'],
         ];
     }
 
-    public function deferAfterInsert() {
+    public function deferAfterInsert()
+    {
         $this->name = $this->scenario == 'test' ? 'test' : 'done';
         $this->updateAttributes(['name']);
     }
     
-    public function deferAfterUpdate() {
+    public function deferAfterUpdate()
+    {
         $this->name = 'updated';
         $this->updateAttributes(['name']);
     }

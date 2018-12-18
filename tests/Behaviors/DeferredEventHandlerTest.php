@@ -1,8 +1,15 @@
 <?php
 
-class DeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
+namespace UrbanIndo\Yii2\QueueTests\Behaviors;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
+use Yii;
+
+class DeferredEventHandlerTest extends BaseTestCase
+{
     
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass()
+    {
         Yii::$app->getDb()->createCommand()->createTable('deferred_event_handler_test', [
             'id' => 'pk',
             'name' => 'string',
@@ -10,7 +17,8 @@ class DeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
         Yii::$app->queue->purge();
     }
     
-    public function testEventHandlerInSimpleComponent() {
+    public function testEventHandlerInSimpleComponent()
+    {
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
         $this->assertEquals(0, $queue->getSize());
@@ -31,7 +39,8 @@ class DeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('done', $model->name);
     }
     
-    public function testEventHandlerInSimpleModel() {
+    public function testEventHandlerInSimpleModel()
+    {
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
         $this->assertEquals(0, $queue->getSize());
@@ -53,20 +62,24 @@ class DeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
     }
 }
 
-class DeferredEventHandlerImpl extends \UrbanIndo\Yii2\Queue\Behaviors\DeferredEventHandler {
-    public function handleEvent($owner) {
+class DeferredEventHandlerImpl extends \UrbanIndo\Yii2\Queue\Behaviors\DeferredEventHandler
+{
+    public function handleEvent($owner)
+    {
         $owner->updateModel();
         return true;
     }
 }
 
-class DeferredEventHandlerTestComponent extends \yii\base\Component {
+class DeferredEventHandlerTestComponent extends \yii\base\Component
+{
     
     const EVENT_TEST = 'eventTest';
     
     public $recordId;
     
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             [
                 'class' => DeferredEventHandlerImpl::class,
@@ -75,15 +88,17 @@ class DeferredEventHandlerTestComponent extends \yii\base\Component {
         ];
     }
     
-    public function triggerEvent() {
+    public function triggerEvent()
+    {
         $model = new DeferredEventHandlerTestActiveRecord();
         $model->id = $this->recordId;
-        $model->name = "test";
+        $model->name = 'test';
         $model->save(false);
         $this->trigger(self::EVENT_TEST);
     }
     
-    public function updateModel() {
+    public function updateModel()
+    {
         $model = DeferredEventHandlerTestActiveRecord::findOne($this->recordId);
         $model->name = 'done';
         $model->save(false);
@@ -91,13 +106,15 @@ class DeferredEventHandlerTestComponent extends \yii\base\Component {
     
 }
 
-class DeferredEventHandlerTestModel extends \yii\base\Model {
+class DeferredEventHandlerTestModel extends \yii\base\Model
+{
     
     const EVENT_TEST = 'eventTest';
     
     public $recordId;
     
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             [
                 'class' => DeferredEventHandlerImpl::class,
@@ -106,15 +123,17 @@ class DeferredEventHandlerTestModel extends \yii\base\Model {
         ];
     }
     
-    public function triggerEvent() {
+    public function triggerEvent()
+    {
         $model = new DeferredEventHandlerTestActiveRecord();
         $model->id = $this->recordId;
-        $model->name = "test";
+        $model->name = 'test';
         $model->save(false);
         $this->trigger(self::EVENT_TEST);
     }
     
-    public function updateModel() {
+    public function updateModel()
+    {
         $model = DeferredEventHandlerTestActiveRecord::findOne($this->recordId);
         $model->name = 'done';
         $model->save(false);
@@ -122,9 +141,11 @@ class DeferredEventHandlerTestModel extends \yii\base\Model {
     
 }
 
-class DeferredEventHandlerTestActiveRecord extends \yii\db\ActiveRecord {
+class DeferredEventHandlerTestActiveRecord extends \yii\db\ActiveRecord
+{
     
-    public static function tableName() {
+    public static function tableName()
+    {
         return 'deferred_event_handler_test';
     }
 }

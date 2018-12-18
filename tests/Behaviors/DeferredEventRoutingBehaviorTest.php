@@ -1,8 +1,15 @@
 <?php
 
-class DeferredEventRoutingBehaviorTest extends PHPUnit_Framework_TestCase {
+namespace UrbanIndo\Yii2\QueueTests\Behaviors;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
+use Yii;
+
+class DeferredEventRoutingBehaviorTest extends BaseTestCase
+{
     
-    public function testEventRouting() {
+    public function testEventRouting()
+    {
         
         $queue = Yii::$app->queue;
         /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */

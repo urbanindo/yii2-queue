@@ -1,44 +1,53 @@
 <?php
 
-class EventTest extends PHPUnit_Framework_TestCase
+namespace UrbanIndo\Yii2\QueueTests;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
+use UrbanIndo\Yii2\Queue\Job;
+use UrbanIndo\Yii2\Queue\Queue;
+use UrbanIndo\Yii2\Queue\Queues\MemoryQueue;
+use Yii;
+use yii\base\Event;
+
+class EventTest extends BaseTestCase
 {
 
     public $counter;
 
     public function testOn()
     {
-        \yii\base\Event::on(
-            \UrbanIndo\Yii2\Queue\Queue::className(),
-            \UrbanIndo\Yii2\Queue\Queue::EVENT_AFTER_POST,
+        Event::on(
+            Queue::class,
+            Queue::EVENT_AFTER_POST,
                 function ($event) {
                     $this->counter += 1;
             }
         );
         
-        \yii\base\Event::on(
-            \UrbanIndo\Yii2\Queue\Queue::className(),
-            \UrbanIndo\Yii2\Queue\Queue::EVENT_AFTER_FETCH,
+        Event::on(
+            Queue::class,
+            Queue::EVENT_AFTER_FETCH,
                 function ($event) {
                     $this->counter += 2;
             }
         );
         
-        \yii\base\Event::on(
-            \UrbanIndo\Yii2\Queue\Queue::className(),
-            \UrbanIndo\Yii2\Queue\Queue::EVENT_AFTER_DELETE,
+        Event::on(
+            Queue::class,
+            Queue::EVENT_AFTER_DELETE,
                 function ($event) {
                     $this->counter += 3;
             }
         );
 
         $queue = Yii::createObject([
-            'class' => '\UrbanIndo\Yii2\Queue\Queues\MemoryQueue'
+            'class' => MemoryQueue::class,
         ]);
 
         $this->assertEquals($this->counter, 0);
         
-        /* @var $queue \UrbanIndo\Yii2\Queue\Queues\MemoryQueue */
-        $queue->post(new UrbanIndo\Yii2\Queue\Job([
+        /* @var $queue Queues\MemoryQueue */
+        $queue->post(new Job([
             'route' => function() {
                 //Do something
             }

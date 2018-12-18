@@ -1,8 +1,11 @@
 <?php
 
-use yii\helpers\ArrayHelper;
+namespace UrbanIndo\Yii2\QueueTests;
 
-class TestCase extends PHPUnit_Framework_TestCase
+use yii\helpers\ArrayHelper;
+use PHPUnit\Framework\TestCase as BaseTestCase;
+
+class TestCase extends BaseTestCase
 {
 
     /**

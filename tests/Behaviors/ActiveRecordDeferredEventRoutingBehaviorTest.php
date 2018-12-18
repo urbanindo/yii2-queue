@@ -1,6 +1,12 @@
 <?php
 
-class ActiveRecordDeferredEventRoutingBehaviorTest extends PHPUnit_Framework_TestCase {
+namespace UrbanIndo\Yii2\QueueTests\Behaviors;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
+use Yii;
+
+class ActiveRecordDeferredEventRoutingBehaviorTest extends BaseTestCase
+{
     
     protected function setUp() {
         Yii::$app->getDb()->createCommand()->createTable('test_active_record_deferred_event_routing', [
