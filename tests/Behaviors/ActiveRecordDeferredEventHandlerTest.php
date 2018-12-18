@@ -1,8 +1,15 @@
 <?php
 
-class ActiveRecordDeferredEventHandlerTest extends PHPUnit_Framework_TestCase {
+namespace UrbanIndo\Yii2\QueueTests\Behaviors;
+
+use PHPUnit\Framework\TestCase as BaseTestCase;
+use Yii;
+
+class ActiveRecordDeferredEventHandlerTest extends BaseTestCase
+{
     
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass()
+    {
         Yii::$app->getDb()->createCommand()->createTable('deferred_active_record_event_handler_test', [
             'id' => 'pk',
             'name' => 'string',

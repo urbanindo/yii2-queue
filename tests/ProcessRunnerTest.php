@@ -1,7 +1,10 @@
 <?php
 
+namespace UrbanIndo\Yii2\QueueTests;
+
 use UrbanIndo\Yii2\Queue\ProcessRunner;
 use Symfony\Component\Process\Process;
+use Yii;
 
 class ProcessRunnerTest extends TestCase
 {

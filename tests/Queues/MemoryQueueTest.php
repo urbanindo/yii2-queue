@@ -1,6 +1,11 @@
 <?php
 
+namespace UrbanIndo\Yii2\QueueTests\Queues;
+
+use UrbanIndo\Yii2\Queue\Job;
 use UrbanIndo\Yii2\Queue\Queues\DbQueue;
+use UrbanIndo\Yii2\QueueTests\TestCase;
+use Yii;
 
 class MemoryQueueTest extends TestCase
 {
@@ -35,13 +40,13 @@ class MemoryQueueTest extends TestCase
         
         $this->assertEquals(0, $queue->getSize());
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             self::$counter += 1;
         }]));
         
         $this->assertEquals(1, $queue->getSize());        
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             self::$counter += 1;
         }]));
         
@@ -58,7 +63,7 @@ class MemoryQueueTest extends TestCase
         
         $this->assertFalse($job);
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             $this->counter += 1;
         }]));
         
@@ -68,7 +73,7 @@ class MemoryQueueTest extends TestCase
         
         $this->assertEquals(0, $queue->getSize());
         
-        $this->assertTrue($job instanceof UrbanIndo\Yii2\Queue\Job);
+        $this->assertTrue($job instanceof Job);
     }
     
     public function testRun()
@@ -81,19 +86,19 @@ class MemoryQueueTest extends TestCase
         
         $this->assertFalse($job);
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             self::$counter += 1;
         }]));
         
         $job = $queue->fetch();
 
-        $this->assertTrue($job instanceof UrbanIndo\Yii2\Queue\Job);
+        $this->assertTrue($job instanceof Job);
         
         $queue->run($job);
         
         $this->assertEquals(1, self::$counter);
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             self::$counter += 2;
         }]));
         
@@ -110,11 +115,11 @@ class MemoryQueueTest extends TestCase
         
         $this->assertEquals(0, $queue->getSize());
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             self::$counter += 1;
         }]));
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             self::$counter += 1;
         }]));
         
@@ -140,7 +145,7 @@ class MemoryQueueTest extends TestCase
         
         $this->assertFalse($job);
         
-        $queue->post(new UrbanIndo\Yii2\Queue\Job(['route' => function () {
+        $queue->post(new Job(['route' => function () {
             self::$counter += 1;
         }]));
         
@@ -148,7 +153,7 @@ class MemoryQueueTest extends TestCase
         
         $this->assertEquals(0, $queue->getSize());
         
-        $this->assertTrue($job instanceof UrbanIndo\Yii2\Queue\Job);
+        $this->assertTrue($job instanceof Job);
         
         $queue->release($job);
         

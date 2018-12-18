@@ -1,9 +1,14 @@
 language: php
 dist: trusty
 php:
-  - 7
-  - 7.1
   - 7.2
+  - 7.3
+
+addons:
+  sonarcloud:
+    organization: "urbanindo"
+    token:
+      secure: "SoALFI3R7htTg/uwUNZ1f1xqxCBLUgm1XVg9lK0+SUBBZiLkBdLhPT5AvSjaqOP0nh9WSrJHzgKkzsJHikEw+OGXPkKoLVFC18S2TtO6/rh14Wpdqg1n6+wZ2Y5cTmylRgQ+6b91ERMkpJXLXTnwG0slkQIc485FB9Ch/zV6ssElT9rMsC4JgM8hIj3flcCz1QPVsc/LlvAql70irgeB8hbjO4EmCrpHTqVy55hHcKwSWIQaUOXYTFJBuDCXpmQKT1+taT+6PLQmAskFaUU6hhH3GDTvtQiJqIv7FymRYQIDPUHYsCt/Kp64F+BBXBUT71/Q7qeIbQP+6XK7ofI0zfJ4NYmGp8z94ygNzjS6xZdBWOgEBPbGkoV1YB/kopOmlYak+6emkrzIY0ybQhjr4wrFyDdG/apwjmgLhjG2Hnbl1qoEQ4OimHDQdBqHb2Eh1SFfwrYyLM06aNe3/4hawacUgja3n05XE/+Bw52vVW6eGx5elNjC2yUqjSFvch7mhkKxWrt+2mKgA9gHxbN++uaeR/Ty3xBE+cHeKynb/YYFfXukEee/68HsdXR10qkdfQGQVI7i38F6o9+D+twNQXuqt93OPrS/4EZdpIjjTl1qm3xNYRWcUJwMiH1KdZb4mGiRodvrqAqkcYaraT8b0kzzxGiy6kzNQU6zD8QtSvY="
 
 services:
   - mysql
@@ -27,4 +32,5 @@ install:
   - travis_retry composer install --prefer-dist --no-interaction
 
 after_success:
+  - sonar-scanner
   - bash <(curl -s https://codecov.io/bash)
